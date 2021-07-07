@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/app_theme_switch_button"
+        android:title=""
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/layout_switch_button"
+        android:title=""
+        app:showAsAction="ifRoom" />
+</menu>

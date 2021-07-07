@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="colorSearchIcon" type="reference" />
+    <attr name="colorGridLayoutIcon" type="reference" />
+    <attr name="colorLinearLayoutIcon" type="reference" />
+    <attr name="colorLightThemeIcon" type="reference" />
+    <attr name="colorDarkThemeIcon" type="reference" />
+    <attr name="colorAutoThemeIcon" type="reference" />
+    <attr name="colorDropUpIcon" type="reference" />
+    <attr name="colorDropDownIcon" type="reference" />
+    <attr name="colorChip" type="reference" />
+    <attr name="colorTitleText" type="reference" />
+    <attr name="colorCollapsingToolbarText" type="reference" />
+    <attr name="colorToolbarText" type="reference" />
+    <attr name="colorNowPlayingMoviesIcon" type="reference" />
+    <attr name="colorPopularMoviesIcon" type="reference" />
+    <attr name="colorTopRatedMoviesIcon" type="reference" />
+    <attr name="colorRectangle" type="reference" />
+    <attr name="colorBottomNavigationCheckedItem" type="reference" />
+    <attr name="colorBottomNavigationUncheckedItem" type="reference" />
+    <attr name="colorGradientStart" type="reference" />
+    <attr name="colorGradientEnd" type="reference" />
+    <attr name="colorTextOnGradient" type="reference" />
+    <attr name="colorMovieTimeIcon" type="reference" />
+    <attr name="colorRatingStar" type="reference" />
+    <attr name="colorNoInternetNotification" type="reference" />
+    <attr name="colorProgressBar" type="reference" />
+</resources>
