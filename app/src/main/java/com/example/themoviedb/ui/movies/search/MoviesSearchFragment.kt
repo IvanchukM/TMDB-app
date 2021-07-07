@@ -26,25 +26,26 @@ import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MoviesSearchFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
-    LoadingStateAdapter.OnRetryClickListener {
+        LoadingStateAdapter.OnRetryClickListener {
 
-    private lateinit var binding: FragmentMoviesSearchBinding
+    private var _binding: FragmentMoviesSearchBinding? = null
+    private val binding get() = _binding!!
     private val viewModel by viewModels<MoviesViewModel>()
     private val moviesRecyclerViewPagingAdapter: MoviesPagingAdapter by lazy {
         MoviesPagingAdapter(this)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentMoviesSearchBinding.inflate(inflater, container, false)
+        _binding = FragmentMoviesSearchBinding.inflate(inflater, container, false)
         binding.moviesRecycler.adapter =
-            moviesRecyclerViewPagingAdapter.withLoadStateFooter(
-                footer = LoadingStateAdapter(this)
-            )
+                moviesRecyclerViewPagingAdapter.withLoadStateFooter(
+                        footer = LoadingStateAdapter(this)
+                )
         searchMovie()
 
         setUpMovieSearch()
@@ -53,8 +54,8 @@ class MoviesSearchFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListene
 
     private fun hideKeyboard() {
         (binding.searchView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
-            view?.windowToken,
-            0
+                view?.windowToken,
+                0
         )
     }
 
@@ -70,20 +71,20 @@ class MoviesSearchFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListene
 
         binding.searchView.requestFocus()
         (binding.searchView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).toggleSoftInput(
-            InputMethodManager.SHOW_FORCED,
-            InputMethodManager.HIDE_IMPLICIT_ONLY
+                InputMethodManager.SHOW_FORCED,
+                InputMethodManager.HIDE_IMPLICIT_ONLY
         )
 
         binding.searchView.textChanges()
-            .observeOn(AndroidSchedulers.mainThread())
-            .debounce(300, TimeUnit.MILLISECONDS)
-            .filter { it.isNotEmpty() }
-            .map { it.toString().trim() }
-            .subscribe({
-                viewModel.loadMovies(MovieQueryType.SearchString(it))
-            }, {
-                Log.d("TAG", "setUpMovieSearch: $it")
-            })
+                .observeOn(AndroidSchedulers.mainThread())
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .filter { it.isNotEmpty() }
+                .map { it.toString().trim() }
+                .subscribe({
+                    viewModel.loadMovies(MovieQueryType.SearchString(it))
+                }, {
+                    Log.d("TAG", "setUpMovieSearch: $it")
+                })
     }
 
     private fun setUpProgressBar() {
@@ -96,28 +97,33 @@ class MoviesSearchFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListene
         moviesRecyclerViewPagingAdapter.addLoadStateListener { loadState ->
             if (loadState.refresh is LoadState.NotLoading) {
                 binding.noMovieFoundImage.isVisible =
-                    moviesRecyclerViewPagingAdapter.itemCount < 1
+                        moviesRecyclerViewPagingAdapter.itemCount < 1
                 binding.noMovieFoundText.isVisible =
-                    moviesRecyclerViewPagingAdapter.itemCount < 1
+                        moviesRecyclerViewPagingAdapter.itemCount < 1
             }
         }
     }
 
     override fun onMovieClick(
-        movieModel: MoviesModel
+            movieModel: MoviesModel
     ) {
         hideKeyboard()
         requireActivity().supportFragmentManager
-            .beginTransaction()
-            .replace(
-                R.id.activity_fragment_container,
-                MovieDetailsFragment.newInstance(movieModel)
-            ).addToBackStack(null)
-            .commit()
+                .beginTransaction()
+                .replace(
+                        R.id.activity_fragment_container,
+                        MovieDetailsFragment.newInstance(movieModel)
+                ).addToBackStack(null)
+                .commit()
     }
 
     override fun onRetryClick() {
         moviesRecyclerViewPagingAdapter.retry()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

@@ -27,9 +27,10 @@ private const val ARG_MOVIE_STRING = "queryString"
 
 @AndroidEntryPoint
 class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
-    LoadingStateAdapter.OnRetryClickListener {
+        LoadingStateAdapter.OnRetryClickListener {
 
-    private lateinit var binding: FragmentMoviesBinding
+    private var _binding: FragmentMoviesBinding? = null
+    private val binding get() = _binding!!
     private val viewModel by viewModels<MoviesViewModel>()
     private val moviesRecyclerViewPagingAdapter: MoviesPagingAdapter by lazy {
         MoviesPagingAdapter(this)
@@ -40,19 +41,19 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         if (savedInstanceState == null) {
             viewModel.loadMovies(
-                arguments?.getParcelable<MovieQueryType>(ARG_MOVIE_STRING) as MovieQueryType
+                    arguments?.getParcelable<MovieQueryType>(ARG_MOVIE_STRING) as MovieQueryType
             )
         }
         setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentMoviesBinding.inflate(inflater, container, false)
+        _binding = FragmentMoviesBinding.inflate(inflater, container, false)
 
         binding.switchLayoutToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -67,9 +68,9 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
         }
 
         binding.moviesRecycler.adapter =
-            moviesRecyclerViewPagingAdapter.withLoadStateFooter(
-                footer = LoadingStateAdapter(this)
-            )
+                moviesRecyclerViewPagingAdapter.withLoadStateFooter(
+                        footer = LoadingStateAdapter(this)
+                )
 
         viewModel.movies.observe(viewLifecycleOwner, {
             moviesRecyclerViewPagingAdapter.submitData(lifecycle, it)
@@ -80,22 +81,22 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
                 ApplicationThemes.LIGHT -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                     binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
-                        .setIcon(R.drawable.ic_light_theme)
+                            .setIcon(R.drawable.ic_light_theme)
                 }
                 ApplicationThemes.DARK -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                     binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
-                        .setIcon(R.drawable.ic_dark_theme)
+                            .setIcon(R.drawable.ic_dark_theme)
                 }
                 ApplicationThemes.AUTO -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                     binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
-                        .setIcon(R.drawable.ic_auto_theme)
+                            .setIcon(R.drawable.ic_auto_theme)
                 }
                 else -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                     binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
-                        .setIcon(R.drawable.ic_auto_theme)
+                            .setIcon(R.drawable.ic_auto_theme)
                 }
             }
         })
@@ -106,17 +107,17 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
                 LayoutManagerTypes.GRID -> {
                     binding.moviesRecycler.layoutManager = GridLayoutManager(activity, 2)
                     binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
-                        .setIcon(R.drawable.ic_grid_layout)
+                            .setIcon(R.drawable.ic_grid_layout)
                 }
                 LayoutManagerTypes.LINEAR -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
                     binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
-                        .setIcon(R.drawable.ic_linear_layout)
+                            .setIcon(R.drawable.ic_linear_layout)
                 }
                 else -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
                     binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
-                        .setIcon(R.drawable.ic_linear_layout)
+                            .setIcon(R.drawable.ic_linear_layout)
                 }
             }
         })
@@ -132,28 +133,33 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
     }
 
     override fun onMovieClick(
-        movieModel: MoviesModel
+            movieModel: MoviesModel
     ) {
         requireActivity().supportFragmentManager
-            .beginTransaction()
-            .replace(
-                R.id.activity_fragment_container,
-                MovieDetailsFragment.newInstance(movieModel)
-            )
-            .addToBackStack(null)
-            .commit()
+                .beginTransaction()
+                .replace(
+                        R.id.activity_fragment_container,
+                        MovieDetailsFragment.newInstance(movieModel)
+                )
+                .addToBackStack(null)
+                .commit()
     }
 
     override fun onRetryClick() {
         moviesRecyclerViewPagingAdapter.retry()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     companion object {
         fun newInstance(queryType: MovieQueryType) =
-            MoviesFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(ARG_MOVIE_STRING, queryType)
+                MoviesFragment().apply {
+                    arguments = Bundle().apply {
+                        putParcelable(ARG_MOVIE_STRING, queryType)
+                    }
                 }
-            }
     }
 }
