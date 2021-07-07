@@ -40,6 +40,7 @@
         <item name="android:textColorPrimary">?attr/colorCollapsingToolbarText</item>
     </style>
 
+
     <style name="RatingBar" parent="Widget.MaterialRatingBar.RatingBar.Small">
         <item name="android:progressBackgroundTint">?attr/colorRatingStar</item>
         <item name="mrb_progressTint">?attr/colorRatingStar</item>

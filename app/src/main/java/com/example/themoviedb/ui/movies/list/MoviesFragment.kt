@@ -55,7 +55,7 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         _binding = FragmentMoviesBinding.inflate(inflater, container, false)
 
-        binding.switchLayoutToolbar.setOnMenuItemClickListener { item ->
+        binding.moviesListToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.app_theme_switch_button -> {
                     viewModel.updateApplicationTheme()
@@ -75,27 +75,29 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
         viewModel.movies.observe(viewLifecycleOwner, {
             moviesRecyclerViewPagingAdapter.submitData(lifecycle, it)
         })
-
+        viewModel.currentMoviesSet.observe(viewLifecycleOwner, {
+            binding.moviesListToolbar.title = it
+        })
         viewModel.applicationTheme.observe(viewLifecycleOwner, { applicationTheme ->
             when (applicationTheme) {
                 ApplicationThemes.LIGHT -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
+                    binding.moviesListToolbar.menu.findItem(R.id.app_theme_switch_button)
                             .setIcon(R.drawable.ic_light_theme)
                 }
                 ApplicationThemes.DARK -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
+                    binding.moviesListToolbar.menu.findItem(R.id.app_theme_switch_button)
                             .setIcon(R.drawable.ic_dark_theme)
                 }
                 ApplicationThemes.AUTO -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
+                    binding.moviesListToolbar.menu.findItem(R.id.app_theme_switch_button)
                             .setIcon(R.drawable.ic_auto_theme)
                 }
                 else -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
+                    binding.moviesListToolbar.menu.findItem(R.id.app_theme_switch_button)
                             .setIcon(R.drawable.ic_auto_theme)
                 }
             }
@@ -106,17 +108,17 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
             when (recyclerViewState) {
                 LayoutManagerTypes.GRID -> {
                     binding.moviesRecycler.layoutManager = GridLayoutManager(activity, 2)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
                             .setIcon(R.drawable.ic_grid_layout)
                 }
                 LayoutManagerTypes.LINEAR -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
                             .setIcon(R.drawable.ic_linear_layout)
                 }
                 else -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
                             .setIcon(R.drawable.ic_linear_layout)
                 }
             }

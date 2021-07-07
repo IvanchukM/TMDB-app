@@ -18,27 +18,33 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
+private const val NOW_PLAYING_STRING = "Now Playing Movies"
+private const val TOP_RATED_STRING = "Top Rated Movies"
+private const val POPULAR_STRING = "Popular Movies"
+private const val MOVIES_STRING = "Movies"
+
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
-    private val repository: MovieRepository,
-    private val networkHandler: NetworkHandler,
-    private val settingsRepository: SettingsRepository
+        private val repository: MovieRepository,
+        private val networkHandler: NetworkHandler,
+        private val settingsRepository: SettingsRepository
 ) : BaseViewModel() {
 
     val movies = MutableLiveData<PagingData<MoviesModel>>()
     val layoutState = MutableLiveData<LayoutManagerTypes>()
     val applicationTheme = MutableLiveData<ApplicationThemes>()
+    val currentMoviesSet = MutableLiveData<String>()
 
     init {
         compositeDisposable.add(
-            settingsRepository.loadLayoutManagerType()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { type -> layoutState.postValue(type) }
+                settingsRepository.loadLayoutManagerType()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe { type -> layoutState.postValue(type) }
         )
         compositeDisposable.add(
-            settingsRepository.loadApplicationTheme()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { theme -> applicationTheme.postValue(theme) }
+                settingsRepository.loadApplicationTheme()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe { theme -> applicationTheme.postValue(theme) }
         )
     }
 
@@ -50,9 +56,9 @@ class MoviesViewModel @Inject constructor(
             else -> ApplicationThemes.AUTO
         }
         compositeDisposable.add(
-            settingsRepository.saveApplicationTheme(applicationThemeType)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe()
+                settingsRepository.saveApplicationTheme(applicationThemeType)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe()
         )
         applicationTheme.postValue(applicationThemeType)
     }
@@ -64,23 +70,29 @@ class MoviesViewModel @Inject constructor(
             else -> LayoutManagerTypes.LINEAR
         }
         compositeDisposable.add(
-            settingsRepository.saveLayoutManagerType(layoutManagerType)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe()
+                settingsRepository.saveLayoutManagerType(layoutManagerType)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe()
         )
         layoutState.postValue(layoutManagerType)
     }
 
     fun loadMovies(queryType: MovieQueryType) {
+        currentMoviesSet.value = when (queryType) {
+            MovieQueryType.Popular -> POPULAR_STRING
+            MovieQueryType.NowPlaying -> NOW_PLAYING_STRING
+            MovieQueryType.TopRated -> TOP_RATED_STRING
+            else -> MOVIES_STRING
+        }
         compositeDisposable.add(
-            repository.getMovies(queryType)
-                .performCallWhenInternetIsAvailable(networkHandler.observeNetworkState())
-                .cachedIn(viewModelScope)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { result ->
-                    movies.value = result
-                }
+                repository.getMovies(queryType)
+                        .performCallWhenInternetIsAvailable(networkHandler.observeNetworkState())
+                        .cachedIn(viewModelScope)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe { result ->
+                            movies.value = result
+                        }
         )
     }
 }
