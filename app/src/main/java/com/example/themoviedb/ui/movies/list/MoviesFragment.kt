@@ -1,7 +1,6 @@
 package com.example.themoviedb.ui.movies.list
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatDelegate
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,15 +11,15 @@ import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.themoviedb.R
-import com.example.themoviedb.utils.LoadingStateAdapter
-import com.example.themoviedb.ui.movies.MoviesPagingAdapter
 import com.example.themoviedb.databinding.FragmentMoviesBinding
 import com.example.themoviedb.models.movies.MoviesModel
-import com.example.themoviedb.ui.movie_details.MovieDetailsFragment
-import com.example.themoviedb.ui.movies.MoviesViewModel
-import com.example.themoviedb.utils.ApplicationThemes
-import com.example.themoviedb.utils.LayoutManagerTypes
 import com.example.themoviedb.repository.MovieQueryType
+import com.example.themoviedb.ui.movie_details.MovieDetailsFragment
+import com.example.themoviedb.ui.movies.MoviesPagingAdapter
+import com.example.themoviedb.ui.movies.MoviesViewModel
+import com.example.themoviedb.ui.settings.SettingsFragment
+import com.example.themoviedb.utils.LayoutManagerTypes
+import com.example.themoviedb.utils.LoadingStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val ARG_MOVIE_STRING = "queryString"
@@ -56,11 +55,11 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         binding.switchLayoutToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.app_theme_switch_button -> {
-                    viewModel.updateApplicationTheme()
-                }
                 R.id.layout_switch_button -> {
                     viewModel.updateLayoutManagerType()
+                }
+                R.id.app_settings -> {
+                    openSettingsFragment()
                 }
             }
             true
@@ -73,31 +72,6 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         viewModel.movies.observe(viewLifecycleOwner, {
             moviesRecyclerViewPagingAdapter.submitData(lifecycle, it)
-        })
-
-        viewModel.applicationTheme.observe(viewLifecycleOwner, { applicationTheme ->
-            when (applicationTheme) {
-                ApplicationThemes.LIGHT -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
-                        .setIcon(R.drawable.ic_light_theme)
-                }
-                ApplicationThemes.DARK -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
-                        .setIcon(R.drawable.ic_dark_theme)
-                }
-                ApplicationThemes.AUTO -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
-                        .setIcon(R.drawable.ic_auto_theme)
-                }
-                else -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.app_theme_switch_button)
-                        .setIcon(R.drawable.ic_auto_theme)
-                }
-            }
         })
 
         viewModel.layoutState.observe(viewLifecycleOwner, { recyclerViewState ->
@@ -123,6 +97,17 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         setUpProgressBar()
         return binding.root
+    }
+
+    private fun openSettingsFragment() {
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.activity_fragment_container,
+                SettingsFragment.newInstance()
+            )
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun setUpProgressBar() {
