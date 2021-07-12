@@ -8,7 +8,6 @@ import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.repository.MovieQueryType
 import com.example.themoviedb.repository.MovieRepository
 import com.example.themoviedb.repository.SettingsRepository
-import com.example.themoviedb.utils.ApplicationThemes
 import com.example.themoviedb.utils.BaseViewModel
 import com.example.themoviedb.utils.LayoutManagerTypes
 import com.example.themoviedb.utils.NetworkHandler
@@ -27,7 +26,6 @@ class MoviesViewModel @Inject constructor(
 
     val movies = MutableLiveData<PagingData<MoviesModel>>()
     val layoutState = MutableLiveData<LayoutManagerTypes>()
-    val applicationTheme = MutableLiveData<ApplicationThemes>()
 
     init {
         compositeDisposable.add(
@@ -35,26 +33,6 @@ class MoviesViewModel @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { type -> layoutState.postValue(type) }
         )
-        compositeDisposable.add(
-            settingsRepository.loadApplicationTheme()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { theme -> applicationTheme.postValue(theme) }
-        )
-    }
-
-    fun updateApplicationTheme() {
-        val applicationThemeType = when (applicationTheme.value) {
-            ApplicationThemes.LIGHT -> ApplicationThemes.DARK
-            ApplicationThemes.DARK -> ApplicationThemes.AUTO
-            ApplicationThemes.AUTO -> ApplicationThemes.LIGHT
-            else -> ApplicationThemes.AUTO
-        }
-        compositeDisposable.add(
-            settingsRepository.saveApplicationTheme(applicationThemeType)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe()
-        )
-        applicationTheme.postValue(applicationThemeType)
     }
 
     fun updateLayoutManagerType() {
