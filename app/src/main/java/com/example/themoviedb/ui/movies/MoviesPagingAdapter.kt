@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.themoviedb.R
 import com.example.themoviedb.databinding.MoviesItemBinding
 import com.example.themoviedb.models.movies.MoviesModel
+import com.example.themoviedb.models.toMovieCommonData
+import com.example.themoviedb.utils.OnMovieClickListener
 import com.example.themoviedb.utils.extensions.convertIntoData
 import com.example.themoviedb.utils.extensions.loadImageWithBaseUrl
 import com.example.themoviedb.utils.extensions.selectPosterPath
@@ -46,17 +48,11 @@ class MoviesPagingAdapter(private val onMovieClickListener: OnMovieClickListener
             }
         }
     }
-
-    interface OnMovieClickListener {
-        fun onMovieClick(
-            movieModel: MoviesModel
-        )
-    }
 }
 
 class MoviesViewHolder(
     private val binding: MoviesItemBinding,
-    private val onMovieClickListener: MoviesPagingAdapter.OnMovieClickListener
+    private val onMovieClickListener: OnMovieClickListener
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
@@ -70,7 +66,7 @@ class MoviesViewHolder(
         binding.movieReleaseDate.text = movieModel.releaseDate?.convertIntoData()
         binding.movieCard.setOnClickListener {
             onMovieClickListener.onMovieClick(
-                movieModel
+                movieModel.toMovieCommonData()
             )
         }
     }

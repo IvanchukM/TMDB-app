@@ -12,20 +12,24 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentMoviesBinding
+import com.example.themoviedb.models.MovieCommonDataModel
 import com.example.themoviedb.models.movies.MoviesModel
+import com.example.themoviedb.models.toMovieCommonData
 import com.example.themoviedb.repository.MovieQueryType
+import com.example.themoviedb.ui.favorites.FavoriteMoviesFragment
 import com.example.themoviedb.ui.movie_details.MovieDetailsFragment
 import com.example.themoviedb.ui.movies.MoviesPagingAdapter
 import com.example.themoviedb.ui.movies.MoviesViewModel
 import com.example.themoviedb.ui.settings.SettingsFragment
 import com.example.themoviedb.utils.LayoutManagerTypes
 import com.example.themoviedb.utils.LoadingStateAdapter
+import com.example.themoviedb.utils.OnMovieClickListener
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val ARG_MOVIE_STRING = "queryString"
 
 @AndroidEntryPoint
-class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
+class MoviesFragment : Fragment(), OnMovieClickListener,
     LoadingStateAdapter.OnRetryClickListener {
 
     private lateinit var binding: FragmentMoviesBinding
@@ -55,6 +59,9 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         binding.switchLayoutToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
+                R.id.open_favorite_movies -> {
+                    openFavoritesFragment()
+                }
                 R.id.layout_switch_button -> {
                     viewModel.updateLayoutManagerType()
                 }
@@ -99,6 +106,17 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
         return binding.root
     }
 
+    private fun openFavoritesFragment() {
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.activity_fragment_container,
+                FavoriteMoviesFragment.newInstance()
+            )
+            .addToBackStack(null)
+            .commit()
+    }
+
     private fun openSettingsFragment() {
         requireActivity().supportFragmentManager
             .beginTransaction()
@@ -117,13 +135,13 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
     }
 
     override fun onMovieClick(
-        movieModel: MoviesModel
+        movieCommonDataModel: MovieCommonDataModel
     ) {
         requireActivity().supportFragmentManager
             .beginTransaction()
             .replace(
                 R.id.activity_fragment_container,
-                MovieDetailsFragment.newInstance(movieModel)
+                MovieDetailsFragment.newInstance(movieCommonDataModel)
             )
             .addToBackStack(null)
             .commit()

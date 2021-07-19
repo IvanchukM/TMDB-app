@@ -2,10 +2,10 @@ package com.example.themoviedb.ui.movie_details
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.themoviedb.models.movie_details.MovieCast
-import com.example.themoviedb.models.movie_details.MovieDetailsResponse
-import com.example.themoviedb.models.movie_reviews.ReviewDetails
-import com.example.themoviedb.models.movies.MoviesModel
+import com.example.themoviedb.models.MovieCommonDataModel
+import com.example.themoviedb.models.MovieDetailsModel
+import com.example.themoviedb.models.MovieInfoModel
+import com.example.themoviedb.models.toMovieDetailsModel
 import com.example.themoviedb.repository.MovieRepository
 import com.example.themoviedb.utils.BaseViewModel
 import com.example.themoviedb.utils.LoadingState
@@ -23,27 +23,39 @@ class MovieDetailsViewModel @Inject constructor(
     private val networkHandler: NetworkHandler
 ) : BaseViewModel() {
 
-    val movieData = MutableLiveData<MovieDetailsResponse>()
-    val movieReviews = MutableLiveData<List<ReviewDetails>>()
-    val movieActorsData = MutableLiveData<MovieCast>()
+    val movieDetails = MutableLiveData<MovieDetailsModel>()
     val loadingState = MutableLiveData<LoadingState>()
-    val movieCommonData = MutableLiveData<MoviesModel>()
+    val movieCommonData = MutableLiveData<MovieCommonDataModel>()
+    var test = MutableLiveData<MovieInfoModel>()
 
-    fun setMovieData(movieModel: MoviesModel) {
-        movieCommonData.postValue(movieModel)
-        compositeDisposable.add(
-            repository.getAllMovieData(movieModel.id)
-                .performCallWhenInternetIsAvailable(networkHandler.observeNetworkState())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .handleLoadingState(loadingState)
-                .subscribe({ result ->
-                    movieData.value = result.movieInfoResponse
-                    movieActorsData.value = result.movieCast
-                    movieReviews.value = result.movieReviewsResponse.reviewDetails
-                }, {
-                    Log.d("TAG", it.toString())
-                })
-        )
+//    fun addFavoriteMovie() {
+//        test.value?.let {
+//            compositeDisposable.add(
+//                repository.addFavoriteMovie(it.toFavoriteEntity())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe({
+//                    }, { error ->
+//                        Log.d("TAG", "addFavoriteMovie: $error")
+//                    })
+//            )
+//        }
+//    }
+    fun setMovieData(
+        movieCommonDataModel: MovieCommonDataModel
+    ) {
+        movieCommonData.postValue(movieCommonDataModel)
+            compositeDisposable.add(
+                repository.getAllMovieData(movieCommonDataModel.movieId)
+                    .performCallWhenInternetIsAvailable(networkHandler.observeNetworkState())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .handleLoadingState(loadingState)
+                    .subscribe({ result ->
+                        movieDetails.value = result.toMovieDetailsModel()
+                        test.postValue(result)
+                    }, {
+                        Log.d("TAG", it.toString())
+                    })
+            )
     }
 }

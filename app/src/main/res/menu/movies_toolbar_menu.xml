@@ -1,5 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/open_favorite_movies"
+        android:icon="@drawable/ic_favorite"
+        android:title=""
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/layout_switch_button"
         android:title=""

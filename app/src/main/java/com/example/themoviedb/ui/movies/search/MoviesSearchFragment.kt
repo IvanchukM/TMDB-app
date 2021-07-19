@@ -12,20 +12,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.paging.LoadState
 import com.example.themoviedb.R
-import com.example.themoviedb.utils.LoadingStateAdapter
-import com.example.themoviedb.ui.movies.MoviesPagingAdapter
 import com.example.themoviedb.databinding.FragmentMoviesSearchBinding
-import com.example.themoviedb.models.movies.MoviesModel
-import com.example.themoviedb.ui.movie_details.MovieDetailsFragment
-import com.example.themoviedb.ui.movies.MoviesViewModel
+import com.example.themoviedb.models.MovieCommonDataModel
 import com.example.themoviedb.repository.MovieQueryType
+import com.example.themoviedb.ui.movie_details.MovieDetailsFragment
+import com.example.themoviedb.ui.movies.MoviesPagingAdapter
+import com.example.themoviedb.ui.movies.MoviesViewModel
+import com.example.themoviedb.utils.LoadingStateAdapter
+import com.example.themoviedb.utils.OnMovieClickListener
 import com.jakewharton.rxbinding4.widget.textChanges
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
-class MoviesSearchFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
+class MoviesSearchFragment : Fragment(), OnMovieClickListener,
     LoadingStateAdapter.OnRetryClickListener {
 
     private lateinit var binding: FragmentMoviesSearchBinding
@@ -104,14 +105,14 @@ class MoviesSearchFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListene
     }
 
     override fun onMovieClick(
-        movieModel: MoviesModel
+        movieCommonDataModel: MovieCommonDataModel
     ) {
         hideKeyboard()
         requireActivity().supportFragmentManager
             .beginTransaction()
             .replace(
                 R.id.activity_fragment_container,
-                MovieDetailsFragment.newInstance(movieModel)
+                MovieDetailsFragment.newInstance(movieCommonDataModel)
             ).addToBackStack(null)
             .commit()
     }

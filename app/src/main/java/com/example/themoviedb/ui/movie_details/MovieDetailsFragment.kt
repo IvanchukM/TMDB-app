@@ -2,6 +2,7 @@ package com.example.themoviedb.ui.movie_details
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentMovieDetailsBinding
+import com.example.themoviedb.models.MovieCommonDataModel
+import com.example.themoviedb.models.MovieDetailsModel
 import com.example.themoviedb.models.movie_details.Genre
 import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.ui.movie_reviews.MovieReviewDetailsFragment
@@ -24,7 +27,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
 
-private const val ARG_MOVIE_MODEL = "movieModel"
+private const val ARG_MOVIE_MODEL = "movieCommonData"
 
 @AndroidEntryPoint
 class MovieDetailsFragment : Fragment() {
@@ -35,10 +38,10 @@ class MovieDetailsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val movieInfo = arguments?.getParcelable<MoviesModel>(ARG_MOVIE_MODEL)
+        val movieInfo = arguments?.getParcelable<MovieCommonDataModel>(ARG_MOVIE_MODEL)
         if (savedInstanceState == null) {
-            movieInfo?.let {
-                viewModel.setMovieData(it)
+            if (movieInfo != null) {
+                viewModel.setMovieData(movieInfo)
             }
         }
         postponeEnterTransition()
@@ -75,52 +78,55 @@ class MovieDetailsFragment : Fragment() {
         })
 
         viewModel.movieCommonData.observe(viewLifecycleOwner, {
-            binding.movieImage.loadImageWithBaseUrl(it.selectPosterPath()) {
+            binding.movieImage.loadImageWithBaseUrl(it.posterPath) {
                 startPostponedEnterTransition()
             }
-            binding.movieYear.text = it.releaseDate?.convertIntoYear()
-            binding.averageRating.text = it.voteAverage.toString()
-            binding.movieRating.rating = it.voteAverage.div(2)
+            binding.movieYear.text = it.releaseDate
+            binding.averageRating.text = it.votes.toString()
+            binding.movieRating.rating = it.votes.div(2)
             binding.movieRating.setIsIndicator(true)
             binding.totalVotes.text =
-                resources.getString(R.string.movie_votes, it.voteCount)
+                resources.getString(R.string.movie_votes, it.votes.toInt())
             binding.myToolbar.title = it.title
             binding.movieRating.visibility = View.VISIBLE
             binding.movieYear.visibility = View.VISIBLE
         })
 
-        viewModel.movieData.observe(viewLifecycleOwner, {
+        viewModel.movieDetails.observe(viewLifecycleOwner, {
             if (it.releaseDate == null) {
                 binding.movieYear.visibility = View.GONE
             }
             binding.movieRuntime.text =
-                resources.getString(R.string.movie_runtime, it.runtime / 60, it.runtime % 60)
-            addMovieGenreChip(it.genres, binding.movieGenres)
-            binding.movieStoryline.text = it.overview
+                resources.getString(
+                    R.string.movie_runtime, it.runtime?.div(60),
+                    it.runtime?.rem(60)
+                )
+            it.genres?.let { it1 -> addMovieGenreChip(it1, binding.movieGenres) }
+            binding.movieStoryline.text = it.storyline
             binding.movieTagLineText.text = it.tagLine
             binding.movieBudgetText.text = resources.getString(R.string.movie_budget, it.budget)
             binding.movieRevenueText.text =
                 resources.getString(R.string.movie_budget, it.revenue)
-            binding.premiereText.text = it.releaseDate?.convertIntoData()
-            binding.homePageLink.text = it.homepage
+            binding.premiereText.text = it.releaseDate
+            binding.homePageLink.text = it.homePage
             fillEmptyFields(
                 it.tagLine, it.budget, it.revenue,
-                it.releaseDate?.convertIntoData(), it.homepage,
-                it.overview
+                it.releaseDate, it.homePage,
+                it.storyline
             )
         })
 
-        viewModel.movieActorsData.observe(viewLifecycleOwner, {
-            if (it.actors.isNullOrEmpty()) {
+        viewModel.movieDetails.observe(viewLifecycleOwner, {
+            if (it.actors?.actors.isNullOrEmpty()) {
                 binding.noActors.visibility = View.VISIBLE
                 binding.recyclerViewActors.visibility = View.GONE
             }
-            actorsRecyclerAdapter.setActors(it.actors)
+            it.actors?.let { actorsInfo -> actorsRecyclerAdapter.setActors(actorsInfo.actors) }
         })
 
-        viewModel.movieReviews.observe(viewLifecycleOwner, { reviews ->
-            if (reviews.isNotEmpty()) {
-                binding.movieFirstReview.text = reviews.first().content
+        viewModel.movieDetails.observe(viewLifecycleOwner, { reviews ->
+            if (reviews.reviews?.isNotEmpty() == true) {
+                binding.movieFirstReview.text = reviews.reviews.first().content
             } else {
                 binding.movieFirstReview.visibility = View.GONE
                 binding.movieReviewsSeeMore.visibility = View.GONE
@@ -130,6 +136,10 @@ class MovieDetailsFragment : Fragment() {
 
         binding.movieReviewsSeeMore.setOnClickListener {
             openReviewDetails()
+        }
+
+        binding.addToFavorites.setOnClickListener {
+//            addToFavorite()
         }
 
         return binding.root
@@ -181,23 +191,29 @@ class MovieDetailsFragment : Fragment() {
     }
 
     private fun openReviewDetails() {
-        viewModel.movieReviews.value?.let {
+        val reviews = viewModel.movieDetails.value?.reviews
+        if (reviews != null) {
             parentFragmentManager
                 .beginTransaction()
                 .replace(
-                    R.id.activity_fragment_container, MovieReviewDetailsFragment.newInstance(it)
+                    R.id.activity_fragment_container,
+                    MovieReviewDetailsFragment.newInstance(reviews)
                 )
                 .addToBackStack(null)
                 .commit()
         }
     }
 
+//    private fun addToFavorite() {
+//        viewModel.addFavoriteMovie()
+//    }
+
     companion object {
         fun newInstance(
-            moviesModel: MoviesModel
+            movieCommonDataModel: MovieCommonDataModel
         ) = MovieDetailsFragment().apply {
             arguments = Bundle().apply {
-                putParcelable(ARG_MOVIE_MODEL, moviesModel)
+                putParcelable(ARG_MOVIE_MODEL, movieCommonDataModel)
             }
         }
     }

@@ -3,7 +3,11 @@ package com.example.themoviedb.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.room.Room
 import com.example.themoviedb.BuildConfig
+import com.example.themoviedb.database.DB_NAME
+import com.example.themoviedb.database.FavoriteMovieDao
+import com.example.themoviedb.database.FavoriteMoviesDatabase
 import com.example.themoviedb.services.MoviesService
 import com.example.themoviedb.services.OkHttpApiKeyInterceptor
 import com.example.themoviedb.utils.DateDeserializer
@@ -39,6 +43,19 @@ object AppModule {
             SHARED_PREFERENCES,
             Context.MODE_PRIVATE
         )
+
+    @Provides
+    @Singleton
+    fun provideFavoriteMoviesDb(context: Context): FavoriteMoviesDatabase =
+        Room.databaseBuilder(context, FavoriteMoviesDatabase::class.java, DB_NAME)
+            .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
+            .build()
+
+    @Provides
+    @Singleton
+    fun providesFavoriteMoviesDao(context: Context): FavoriteMovieDao =
+        provideFavoriteMoviesDb(context).movieDao()
 
     @Provides
     @Singleton
