@@ -1,11 +1,17 @@
 package com.example.themoviedb.services
 
+import com.example.themoviedb.models.auth.AuthResponse
+import com.example.themoviedb.models.auth.LoginResponse
+import com.example.themoviedb.models.auth.SessionResponse
+import com.example.themoviedb.models.favorite_movies.AddFavoriteMovieResponse
+import com.example.themoviedb.models.favorite_movies.FavoriteMoviesResponse
 import com.example.themoviedb.models.movie_details.MovieCast
 import com.example.themoviedb.models.movie_details.MovieDetailsResponse
 import com.example.themoviedb.models.movies.MoviesResponse
 import com.example.themoviedb.models.movie_reviews.MovieReviewsResponse
 import io.reactivex.Single
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -46,4 +52,36 @@ interface MoviesService {
     fun getMovieCast(
         @Path("id") movieId: Int,
     ): Single<MovieCast>
+
+    @GET("3/authentication/token/new")
+    fun getRequestToken(): Single<AuthResponse>
+
+    @POST("3/authentication/token/validate_with_login")
+    fun loginUser(
+        @Query("username") username: String,
+        @Query("password") password: String,
+        @Query("request_token") requestToken: String
+    ): Single<LoginResponse>
+
+    @GET("/3/authentication/session/new")
+    fun createSession(
+        @Query("request_token") accessToken: String
+    ): Single<SessionResponse>
+
+    @POST("/3/account/{username}/favorite")
+    fun addFavoriteMovie(
+        @Path("username") username: String,
+        @Query("session_id") sessionId: String,
+        @Query("media_type") mediaType: String,
+        @Query("media_id") movieId: Int,
+        @Query("favorite") favoriteFlag: Boolean,
+    ): Single<AddFavoriteMovieResponse>
+
+    @GET("3/account/{username}/favorite/movies")
+    fun getFavoriteMovies(
+        @Path("username") username: String,
+        @Query("session_id") sessionId: String,
+        @Query("page") page: Int
+    ): Single<FavoriteMoviesResponse>
+
 }

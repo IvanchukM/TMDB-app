@@ -45,4 +45,9 @@
     <string name="dark">Dark</string>
     <string name="light">Light</string>
     <string name="auto">Auto</string>
+    <string name="sign_in">Sign In</string>
+    <string name="account">Account</string>
+    <string name="login">Login</string>
+    <string name="set_up_account_data">Set up account data</string>
+    <string name="password">password</string>
 </resources>

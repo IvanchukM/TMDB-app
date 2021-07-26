@@ -11,6 +11,7 @@ import javax.inject.Singleton
 
 private const val LAYOUT_MANAGER = "layoutManager"
 private const val APPLICATION_THEME = "applicationTheme"
+private const val SESSION_ID = "session_id"
 
 @Singleton
 class SettingsRepository @Inject constructor(private val sharedPreferences: SharedPreferences) {
@@ -59,5 +60,21 @@ class SettingsRepository @Inject constructor(private val sharedPreferences: Shar
 
         return ApplicationThemes.enumToString(applicationTheme)
 
+    }
+
+    fun saveSessionId(sessionId: String): Completable =
+        Completable.fromCallable {
+            sharedPreferences.edit()
+                .putString(SESSION_ID, sessionId)
+                .apply()
+        }
+            .subscribeOn(Schedulers.io())
+
+    fun loadSessionId(): Single<String?> {
+        val sessionId = sharedPreferences.getString(SESSION_ID, null)
+        return Single.fromCallable {
+            sessionId
+        }
+            .subscribeOn(Schedulers.io())
     }
 }

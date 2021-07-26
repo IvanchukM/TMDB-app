@@ -14,6 +14,8 @@ import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentMoviesBinding
 import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.repository.MovieQueryType
+import com.example.themoviedb.ui.account.UserAccountFragment
+import com.example.themoviedb.ui.account.login.LoginFragment
 import com.example.themoviedb.ui.movie_details.MovieDetailsFragment
 import com.example.themoviedb.ui.movies.MoviesPagingAdapter
 import com.example.themoviedb.ui.movies.MoviesViewModel
@@ -55,6 +57,9 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         binding.switchLayoutToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
+                R.id.profile -> {
+                    openAccountFragment()
+                }
                 R.id.layout_switch_button -> {
                     viewModel.updateLayoutManagerType()
                 }
@@ -97,6 +102,17 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         setUpProgressBar()
         return binding.root
+    }
+
+    private fun openAccountFragment() {
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.activity_fragment_container,
+                UserAccountFragment.newInstance()
+            )
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun openSettingsFragment() {
