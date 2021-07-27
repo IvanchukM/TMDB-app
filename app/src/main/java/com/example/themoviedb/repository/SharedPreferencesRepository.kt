@@ -12,9 +12,12 @@ import javax.inject.Singleton
 private const val LAYOUT_MANAGER = "layoutManager"
 private const val APPLICATION_THEME = "applicationTheme"
 private const val SESSION_ID = "session_id"
+private const val USERNAME = "username"
+private const val PASSWORD = "password"
+private const val IS_LOGGED = "is_logged"
 
 @Singleton
-class SettingsRepository @Inject constructor(private val sharedPreferences: SharedPreferences) {
+class SharedPreferencesRepository @Inject constructor(private val sharedPreferences: SharedPreferences) {
 
     fun saveLayoutManagerType(currentLayoutManagerType: LayoutManagerTypes): Completable =
         Completable.fromCallable {
@@ -62,19 +65,35 @@ class SettingsRepository @Inject constructor(private val sharedPreferences: Shar
 
     }
 
-    fun saveSessionId(sessionId: String): Completable =
-        Completable.fromCallable {
-            sharedPreferences.edit()
-                .putString(SESSION_ID, sessionId)
-                .apply()
-        }
-            .subscribeOn(Schedulers.io())
-
-    fun loadSessionId(): Single<String?> {
-        val sessionId = sharedPreferences.getString(SESSION_ID, null)
-        return Single.fromCallable {
-            sessionId
-        }
-            .subscribeOn(Schedulers.io())
+    fun saveSessionId(sessionId: String) {
+        sharedPreferences.edit()
+            .putString(SESSION_ID, sessionId)
+            .apply()
     }
+
+    fun getSessionId(): String = sharedPreferences.getString(SESSION_ID, null).toString()
+
+    fun saveUsername(username: String) {
+        sharedPreferences.edit()
+            .putString(USERNAME, username)
+            .apply()
+    }
+
+    fun getUsername(): String = sharedPreferences.getString(USERNAME, null).toString()
+
+//    fun savePassword(password: String) {
+//        sharedPreferences.edit()
+//            .putString(PASSWORD, password)
+//            .apply()
+//    }
+//
+//    fun getPassword(): String = sharedPreferences.getString(PASSWORD, null).toString()
+
+    fun saveLoginState(isLogged: Boolean) {
+        sharedPreferences.edit()
+            .putBoolean(IS_LOGGED, isLogged)
+            .apply()
+    }
+
+    fun getLoginState() = sharedPreferences.getBoolean(IS_LOGGED, false)
 }

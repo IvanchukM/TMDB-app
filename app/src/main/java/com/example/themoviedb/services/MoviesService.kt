@@ -1,6 +1,7 @@
 package com.example.themoviedb.services
 
 import com.example.themoviedb.models.auth.AuthResponse
+import com.example.themoviedb.models.auth.DeleteSessionResponse
 import com.example.themoviedb.models.auth.LoginResponse
 import com.example.themoviedb.models.auth.SessionResponse
 import com.example.themoviedb.models.favorite_movies.AddFavoriteMovieResponse
@@ -10,10 +11,7 @@ import com.example.themoviedb.models.movie_details.MovieDetailsResponse
 import com.example.themoviedb.models.movies.MoviesResponse
 import com.example.themoviedb.models.movie_reviews.MovieReviewsResponse
 import io.reactivex.Single
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface MoviesService {
 
@@ -67,6 +65,11 @@ interface MoviesService {
     fun createSession(
         @Query("request_token") accessToken: String
     ): Single<SessionResponse>
+
+    @DELETE("3/authentication/session")
+    fun deleteSession(
+        @Query("session_id") sessionId: String
+    ): Single<DeleteSessionResponse>
 
     @POST("/3/account/{username}/favorite")
     fun addFavoriteMovie(

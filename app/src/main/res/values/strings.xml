@@ -49,5 +49,9 @@
     <string name="account">Account</string>
     <string name="login">Login</string>
     <string name="set_up_account_data">Set up account data</string>
-    <string name="password">password</string>
+    <string name="password">Password</string>
+    <string name="user_icon">user icon</string>
+    <string name="logout">logout</string>
+    <string name="add_to_favorite_icon">add to favorite icon</string>
+    <string name="require_login_msg">You need to login first</string>
 </resources>

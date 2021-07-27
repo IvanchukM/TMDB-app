@@ -7,6 +7,7 @@ import com.example.themoviedb.models.movie_details.MovieDetailsResponse
 import com.example.themoviedb.models.movie_reviews.ReviewDetails
 import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.repository.MovieRepository
+import com.example.themoviedb.repository.SharedPreferencesRepository
 import com.example.themoviedb.utils.BaseViewModel
 import com.example.themoviedb.utils.LoadingState
 import com.example.themoviedb.utils.NetworkHandler
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailsViewModel @Inject constructor(
     private val repository: MovieRepository,
-    private val networkHandler: NetworkHandler
+    private val networkHandler: NetworkHandler,
+    private val sharedPreferencesRepository: SharedPreferencesRepository
 ) : BaseViewModel() {
 
     val movieData = MutableLiveData<MovieDetailsResponse>()
@@ -28,6 +30,7 @@ class MovieDetailsViewModel @Inject constructor(
     val movieActorsData = MutableLiveData<MovieCast>()
     val loadingState = MutableLiveData<LoadingState>()
     val movieCommonData = MutableLiveData<MoviesModel>()
+    val isUserLoginIn = MutableLiveData<Boolean>()
 
     fun setMovieData(movieModel: MoviesModel) {
         movieCommonData.postValue(movieModel)
@@ -43,6 +46,23 @@ class MovieDetailsViewModel @Inject constructor(
                     movieReviews.value = result.movieReviewsResponse.reviewDetails
                 }, {
                     Log.d("TAG", it.toString())
+                })
+        )
+    }
+
+    fun checkIfUserLoginIn() {
+        isUserLoginIn.value = sharedPreferencesRepository.getLoginState()
+    }
+
+    fun addFavoriteMovie(movieId: Int) {
+        val username = sharedPreferencesRepository.getUsername()
+        val sessionId = sharedPreferencesRepository.getSessionId()
+        compositeDisposable.add(
+            repository.addFavoriteMovie(username, sessionId, movieId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({}, { error ->
+                    Log.d("error", "error happened $error ")
                 })
         )
     }

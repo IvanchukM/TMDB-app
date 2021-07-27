@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.rxjava2.flowable
 import com.example.themoviedb.models.MovieInfoModel
 import com.example.themoviedb.models.auth.AuthResponse
+import com.example.themoviedb.models.auth.DeleteSessionResponse
 import com.example.themoviedb.models.auth.LoginResponse
 import com.example.themoviedb.models.auth.SessionResponse
 import com.example.themoviedb.models.favorite_movies.AddFavoriteMovieResponse
@@ -29,16 +30,10 @@ class MovieRepository @Inject constructor(
         pagingSourceFactory = { MoviesDataSource(moviesService, queryType) }
     ).flowable
 
-    fun getFavoriteMovies(sessionId: String): Flowable<PagingData<FavoriteMovieModel>> = Pager(
+    fun getFavoriteMovies(sessionId: String, username: String): Flowable<PagingData<FavoriteMovieModel>> = Pager(
         config = PagingConfig(20),
-        pagingSourceFactory = { FavoriteMoviesDataSource(moviesService, sessionId,"brestbuble") }
+        pagingSourceFactory = { FavoriteMoviesDataSource(moviesService, sessionId, username) }
     ).flowable
-
-//    fun getFavoriteMovies(username: String, sessionId: String): Single<FavoriteMoviesResponse> =
-//        moviesService.getFavoriteMovies(
-//            username = username,
-//            sessionId = sessionId
-//        )
 
     fun getAllMovieData(movieId: Int): Single<MovieInfoModel> {
         return Single.zip(
@@ -59,6 +54,9 @@ class MovieRepository @Inject constructor(
 
     fun createSession(accessToken: String): Single<SessionResponse> =
         moviesService.createSession(accessToken)
+
+    fun deleteSession(sessionId: String): Single<DeleteSessionResponse> =
+        moviesService.deleteSession(sessionId)
 
     fun addFavoriteMovie(
         username: String,

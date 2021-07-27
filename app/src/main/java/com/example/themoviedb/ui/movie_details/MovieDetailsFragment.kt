@@ -128,6 +128,23 @@ class MovieDetailsFragment : Fragment() {
             }
         })
 
+        binding.addToFavorites.setOnClickListener {
+            val movieId = arguments?.getParcelable<MoviesModel>(ARG_MOVIE_MODEL)?.id
+            viewModel.checkIfUserLoginIn()
+            viewModel.isUserLoginIn.observe(viewLifecycleOwner, { userLoginIn ->
+                if (userLoginIn) {
+                    movieId?.let { id -> viewModel.addFavoriteMovie(id) }
+                } else {
+                    Toast.makeText(
+                        activity,
+                        resources.getString(R.string.require_login_msg),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+
+        }
+
         binding.movieReviewsSeeMore.setOnClickListener {
             openReviewDetails()
         }

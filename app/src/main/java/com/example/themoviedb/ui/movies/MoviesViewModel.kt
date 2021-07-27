@@ -7,7 +7,7 @@ import androidx.paging.rxjava2.cachedIn
 import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.repository.MovieQueryType
 import com.example.themoviedb.repository.MovieRepository
-import com.example.themoviedb.repository.SettingsRepository
+import com.example.themoviedb.repository.SharedPreferencesRepository
 import com.example.themoviedb.utils.BaseViewModel
 import com.example.themoviedb.utils.LayoutManagerTypes
 import com.example.themoviedb.utils.NetworkHandler
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class MoviesViewModel @Inject constructor(
     private val repository: MovieRepository,
     private val networkHandler: NetworkHandler,
-    private val settingsRepository: SettingsRepository
+    private val sharedPreferencesRepository: SharedPreferencesRepository
 ) : BaseViewModel() {
 
     val movies = MutableLiveData<PagingData<MoviesModel>>()
@@ -29,7 +29,7 @@ class MoviesViewModel @Inject constructor(
 
     init {
         compositeDisposable.add(
-            settingsRepository.loadLayoutManagerType()
+            sharedPreferencesRepository.loadLayoutManagerType()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { type -> layoutState.postValue(type) }
         )
@@ -42,7 +42,7 @@ class MoviesViewModel @Inject constructor(
             else -> LayoutManagerTypes.LINEAR
         }
         compositeDisposable.add(
-            settingsRepository.saveLayoutManagerType(layoutManagerType)
+            sharedPreferencesRepository.saveLayoutManagerType(layoutManagerType)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe()
         )
