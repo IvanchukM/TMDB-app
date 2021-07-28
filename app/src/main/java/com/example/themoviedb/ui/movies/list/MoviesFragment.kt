@@ -26,7 +26,7 @@ private const val ARG_MOVIE_STRING = "queryString"
 
 @AndroidEntryPoint
 class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
-        LoadingStateAdapter.OnRetryClickListener {
+    LoadingStateAdapter.OnRetryClickListener {
 
     private var _binding: FragmentMoviesBinding? = null
     private val binding get() = _binding!!
@@ -40,16 +40,16 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         if (savedInstanceState == null) {
             viewModel.loadMovies(
-                    arguments?.getParcelable<MovieQueryType>(ARG_MOVIE_STRING) as MovieQueryType
+                arguments?.getParcelable<MovieQueryType>(ARG_MOVIE_STRING) as MovieQueryType
             )
         }
         setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
 
         _binding = FragmentMoviesBinding.inflate(inflater, container, false)
@@ -67,9 +67,9 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
         }
 
         binding.moviesRecycler.adapter =
-                moviesRecyclerViewPagingAdapter.withLoadStateFooter(
-                        footer = LoadingStateAdapter(this)
-                )
+            moviesRecyclerViewPagingAdapter.withLoadStateFooter(
+                footer = LoadingStateAdapter(this)
+            )
 
         viewModel.movies.observe(viewLifecycleOwner, {
             moviesRecyclerViewPagingAdapter.submitData(lifecycle, it)
@@ -81,17 +81,17 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
                 LayoutManagerTypes.GRID -> {
                     binding.moviesRecycler.layoutManager = GridLayoutManager(activity, 2)
                     binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
-                            .setIcon(R.drawable.ic_grid_layout)
+                        .setIcon(R.drawable.ic_grid_layout)
                 }
                 LayoutManagerTypes.LINEAR -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
                     binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
-                            .setIcon(R.drawable.ic_linear_layout)
+                        .setIcon(R.drawable.ic_linear_layout)
                 }
                 else -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
                     binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
-                            .setIcon(R.drawable.ic_linear_layout)
+                        .setIcon(R.drawable.ic_linear_layout)
                 }
             }
         })
@@ -118,16 +118,16 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
     }
 
     override fun onMovieClick(
-            movieModel: MoviesModel
+        movieModel: MoviesModel
     ) {
         requireActivity().supportFragmentManager
-                .beginTransaction()
-                .replace(
-                        R.id.activity_fragment_container,
-                        MovieDetailsFragment.newInstance(movieModel)
-                )
-                .addToBackStack(null)
-                .commit()
+            .beginTransaction()
+            .replace(
+                R.id.activity_fragment_container,
+                MovieDetailsFragment.newInstance(movieModel)
+            )
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun onRetryClick() {
@@ -141,10 +141,10 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
     companion object {
         fun newInstance(queryType: MovieQueryType) =
-                MoviesFragment().apply {
-                    arguments = Bundle().apply {
-                        putParcelable(ARG_MOVIE_STRING, queryType)
-                    }
+            MoviesFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(ARG_MOVIE_STRING, queryType)
                 }
+            }
     }
 }
