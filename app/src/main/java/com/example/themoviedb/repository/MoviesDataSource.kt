@@ -7,15 +7,12 @@ import com.example.themoviedb.models.movies.MoviesResponse
 import com.example.themoviedb.services.MoviesService
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class MoviesDataSource @Inject constructor(
-    private val moviesService: MoviesService,
-    private val queryType: MovieQueryType
+class MoviesDataSource(
+        private val moviesService: MoviesService,
+        private val queryType: MovieQueryType
 ) :
-    RxPagingSource<Int, MoviesModel>() {
+        RxPagingSource<Int, MoviesModel>() {
 
     override fun loadSingle(params: LoadParams<Int>): Single<LoadResult<Int, MoviesModel>> {
 
@@ -29,24 +26,24 @@ class MoviesDataSource @Inject constructor(
             is MovieQueryType.TopRated ->
                 moviesService.getTopRatedMovies(position)
             is MovieQueryType.SearchString -> moviesService.searchMovieByName(
-                queryType.searchString,
-                position
+                    queryType.searchString,
+                    position
             )
         }
-            .subscribeOn(Schedulers.io())
-            .map { toLoadResult(it, position) }
-            .onErrorReturn { error -> LoadResult.Error(error) }
+                .subscribeOn(Schedulers.io())
+                .map { toLoadResult(it, position) }
+                .onErrorReturn { error -> LoadResult.Error(error) }
     }
 
     private fun toLoadResult(
-        data: MoviesResponse,
-        position: Int
+            data: MoviesResponse,
+            position: Int
     ): LoadResult<Int, MoviesModel> {
 
         return LoadResult.Page(
-            data = data.movieModel,
-            prevKey = if (position == 1) null else position - 1,
-            nextKey = if (position >= data.totalPages) null else position + 1
+                data = data.movieModel,
+                prevKey = if (position == 1) null else position - 1,
+                nextKey = if (position >= data.totalPages) null else position + 1
         )
     }
 

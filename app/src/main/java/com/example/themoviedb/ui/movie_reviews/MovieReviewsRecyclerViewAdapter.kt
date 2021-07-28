@@ -19,13 +19,11 @@ class MovieReviewsRecyclerViewAdapter :
 
     private var reviewList: List<ReviewItem> = listOf()
 
-    private lateinit var binding: MovieReviewsItemBinding
-
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): MovieReviewsViewHolder {
-        binding = MovieReviewsItemBinding
+        val binding = MovieReviewsItemBinding
             .inflate(LayoutInflater.from(parent.context), parent, false)
 
         return MovieReviewsViewHolder(binding)

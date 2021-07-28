@@ -29,7 +29,8 @@ private const val ARG_MOVIE_MODEL = "movieModel"
 @AndroidEntryPoint
 class MovieDetailsFragment : Fragment() {
 
-    private lateinit var binding: FragmentMovieDetailsBinding
+    private var _binding: FragmentMovieDetailsBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel by viewModels<MovieDetailsViewModel>()
 
@@ -49,7 +50,7 @@ class MovieDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentMovieDetailsBinding.inflate(inflater, container, false)
+        _binding = FragmentMovieDetailsBinding.inflate(inflater, container, false)
 
         binding.recyclerViewActors.isNestedScrollingEnabled = false
 
@@ -192,6 +193,10 @@ class MovieDetailsFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     companion object {
         fun newInstance(
             moviesModel: MoviesModel

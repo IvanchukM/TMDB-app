@@ -17,7 +17,8 @@ private const val ARG_MOVIE_MODEL = "movieModel"
 @AndroidEntryPoint
 class MovieReviewDetailsFragment : Fragment() {
 
-    private lateinit var binding: FragmentMovieReviewDetailsBinding
+    private var _binding: FragmentMovieReviewDetailsBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel by viewModels<ReviewDetailsViewModel>()
 
@@ -33,20 +34,25 @@ class MovieReviewDetailsFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMovieReviewDetailsBinding.inflate(inflater, container, false)
+        _binding = FragmentMovieReviewDetailsBinding.inflate(inflater, container, false)
 
         val reviewsRecyclerViewAdapter = MovieReviewsRecyclerViewAdapter()
         binding.recyclerViewReviews.layoutManager =
-            LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+                LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         binding.recyclerViewReviews.adapter = reviewsRecyclerViewAdapter
         viewModel.movieReviews.observe(viewLifecycleOwner, { result ->
             reviewsRecyclerViewAdapter.setReviews(result)
         })
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

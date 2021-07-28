@@ -28,7 +28,8 @@ private const val ARG_MOVIE_STRING = "queryString"
 class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
     LoadingStateAdapter.OnRetryClickListener {
 
-    private lateinit var binding: FragmentMoviesBinding
+    private var _binding: FragmentMoviesBinding? = null
+    private val binding get() = _binding!!
     private val viewModel by viewModels<MoviesViewModel>()
     private val moviesRecyclerViewPagingAdapter: MoviesPagingAdapter by lazy {
         MoviesPagingAdapter(this)
@@ -51,9 +52,9 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentMoviesBinding.inflate(inflater, container, false)
+        _binding = FragmentMoviesBinding.inflate(inflater, container, false)
 
-        binding.switchLayoutToolbar.setOnMenuItemClickListener { item ->
+        binding.moviesListToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.layout_switch_button -> {
                     viewModel.updateLayoutManagerType()
@@ -79,17 +80,17 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
             when (recyclerViewState) {
                 LayoutManagerTypes.GRID -> {
                     binding.moviesRecycler.layoutManager = GridLayoutManager(activity, 2)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
                         .setIcon(R.drawable.ic_grid_layout)
                 }
                 LayoutManagerTypes.LINEAR -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
                         .setIcon(R.drawable.ic_linear_layout)
                 }
                 else -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
                         .setIcon(R.drawable.ic_linear_layout)
                 }
             }
@@ -131,6 +132,11 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
     override fun onRetryClick() {
         moviesRecyclerViewPagingAdapter.retry()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
