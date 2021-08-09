@@ -46,6 +46,9 @@ class MovieReviewDetailsFragment : Fragment() {
         viewModel.movieReviews.observe(viewLifecycleOwner, { result ->
             reviewsRecyclerViewAdapter.setReviews(result)
         })
+        binding.reviewDetailsToolbar.setNavigationOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
         return binding.root
     }
 

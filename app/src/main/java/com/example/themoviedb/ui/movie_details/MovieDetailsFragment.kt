@@ -6,16 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentMovieDetailsBinding
+import com.example.themoviedb.models.account_movies.AccountMovieStateResponse
+import com.example.themoviedb.models.account_movies.MovieRating
+import com.example.themoviedb.models.account_movies.ToggleFavoriteMovieStateModel
+import com.example.themoviedb.models.account_movies.ToggleWatchlistStateModel
 import com.example.themoviedb.models.movie_details.Genre
 import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.ui.movie_reviews.MovieReviewDetailsFragment
 import com.example.themoviedb.utils.LoadingState
+import com.example.themoviedb.utils.OnMovieRated
 import com.example.themoviedb.utils.extensions.convertIntoData
 import com.example.themoviedb.utils.extensions.convertIntoYear
 import com.example.themoviedb.utils.extensions.loadImageWithBaseUrl
@@ -25,9 +31,10 @@ import com.google.android.material.chip.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val ARG_MOVIE_MODEL = "movieModel"
+private const val RATING_DIALOG_FRAGMENT = "rateFragment"
 
 @AndroidEntryPoint
-class MovieDetailsFragment : Fragment() {
+class MovieDetailsFragment : Fragment(), OnMovieRated {
 
     private lateinit var binding: FragmentMovieDetailsBinding
 
@@ -39,9 +46,11 @@ class MovieDetailsFragment : Fragment() {
         if (savedInstanceState == null) {
             movieInfo?.let {
                 viewModel.setMovieData(it)
+                viewModel.getMovieState(it.id)
             }
         }
         postponeEnterTransition()
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -54,6 +63,10 @@ class MovieDetailsFragment : Fragment() {
         binding.recyclerViewActors.isNestedScrollingEnabled = false
 
         val actorsRecyclerAdapter = ActorsRecyclerViewAdapter()
+
+        binding.movieDetailsToolbar.setNavigationOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
 
         binding.recyclerViewActors.layoutManager =
             LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
@@ -84,7 +97,7 @@ class MovieDetailsFragment : Fragment() {
             binding.movieRating.setIsIndicator(true)
             binding.totalVotes.text =
                 resources.getString(R.string.movie_votes, it.voteCount)
-            binding.myToolbar.title = it.title
+            binding.movieDetailsToolbar.title = it.title
             binding.movieRating.visibility = View.VISIBLE
             binding.movieYear.visibility = View.VISIBLE
         })
@@ -128,28 +141,101 @@ class MovieDetailsFragment : Fragment() {
             }
         })
 
-        binding.addToFavorites.setOnClickListener {
-            val movieId = arguments?.getParcelable<MoviesModel>(ARG_MOVIE_MODEL)?.id
-            viewModel.checkIfUserLoginIn()
-            viewModel.isUserLoginIn.observe(viewLifecycleOwner, { userLoginIn ->
-                if (userLoginIn) {
-                    movieId?.let { id -> viewModel.addFavoriteMovie(id) }
-                } else {
-                    Toast.makeText(
-                        activity,
-                        resources.getString(R.string.require_login_msg),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            })
-
-        }
-
         binding.movieReviewsSeeMore.setOnClickListener {
             openReviewDetails()
         }
+        binding.movieDetailsToolbar.setOnMenuItemClickListener { item ->
+            if (viewModel.isUserLoginIn.value == true) {
+                when (item.itemId) {
+                    R.id.toggle_favorite -> {
+                        switchFavoriteMovieState(
+                            viewModel.movieState.value?.favorite
+                        )
+                    }
+                    R.id.toggle_rating -> {
+                        RateMovieDialogFragment(this).show(
+                            parentFragmentManager,
+                            RATING_DIALOG_FRAGMENT
+                        )
+                    }
+                    R.id.toggle_watchlist -> {
+                        switchWatchlistState(
+                            viewModel.movieState.value?.watchlist
+                        )
+                    }
+                }
+            } else {
+                Toast.makeText(activity, getString(R.string.ask_for_login), Toast.LENGTH_SHORT)
+                    .show()
+            }
+            true
+        }
 
+        viewModel.movieState.observe(viewLifecycleOwner, { movieState ->
+            if (movieState.favorite) {
+                binding.movieDetailsToolbar.menu.findItem(R.id.toggle_favorite).title =
+                    getString(R.string.remove_from_favorite)
+            } else {
+                binding.movieDetailsToolbar.menu.findItem(R.id.toggle_favorite).title =
+                    getString(R.string.add_to_favorite)
+            }
+            if (movieState.movieRating.isMovieRated == false) {
+                binding.movieDetailsToolbar.menu.findItem(R.id.toggle_rating).title =
+                    getString(R.string.rate_movie)
+            } else {
+                binding.movieDetailsToolbar.menu.findItem(R.id.toggle_rating).title =
+                    getString(R.string.change_movie_rating)
+                showUsersMovieRating(movieState.movieRating.rating.toString())
+            }
+            if (movieState.watchlist) {
+                binding.movieDetailsToolbar.menu.findItem(R.id.toggle_watchlist).title =
+                    getString(R.string.remove_from_watchlist)
+            } else {
+                binding.movieDetailsToolbar.menu.findItem(R.id.toggle_watchlist).title =
+                    getString(R.string.add_to_watchlist)
+            }
+        })
+
+        viewModel.testToast.observe(viewLifecycleOwner, { toastMsg ->
+            Toast.makeText(activity, toastMsg, Toast.LENGTH_SHORT).show()
+        })
         return binding.root
+    }
+
+    private fun showUsersMovieRating(movieRating: String) {
+        binding.userMovieRating.isVisible = true
+        binding.userMovieRating.text = movieRating
+    }
+
+    private fun switchFavoriteMovieState(movieFavoriteState: Boolean?) {
+        val movieId = arguments?.getParcelable<MoviesModel>(ARG_MOVIE_MODEL)?.id
+        if (movieId != null && movieFavoriteState != null) {
+            viewModel.switchMovieFavoriteState(
+                ToggleFavoriteMovieStateModel(
+                    movieId = movieId,
+                    isFavorite = !movieFavoriteState
+                )
+            )
+        }
+    }
+
+    private fun switchWatchlistState(watchlistState: Boolean?) {
+        val movieId = arguments?.getParcelable<MoviesModel>(ARG_MOVIE_MODEL)?.id
+        if (movieId != null && watchlistState != null) {
+            viewModel.switchWatchlistState(
+                ToggleWatchlistStateModel(
+                    movieId = movieId,
+                    isInWatchlist = !watchlistState
+                )
+            )
+        }
+    }
+
+    override fun rateMovie(movieRating: Float) {
+        val movieId = arguments?.getParcelable<MoviesModel>(ARG_MOVIE_MODEL)?.id
+        if (movieId != null) {
+            viewModel.setMovieRating(movieId, movieRating)
+        }
     }
 
     private fun fillEmptyFields(

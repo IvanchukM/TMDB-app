@@ -1,11 +1,10 @@
 package com.example.themoviedb.services
 
+import com.example.themoviedb.models.account_movies.*
 import com.example.themoviedb.models.auth.AuthResponse
 import com.example.themoviedb.models.auth.DeleteSessionResponse
 import com.example.themoviedb.models.auth.LoginResponse
 import com.example.themoviedb.models.auth.SessionResponse
-import com.example.themoviedb.models.favorite_movies.AddFavoriteMovieResponse
-import com.example.themoviedb.models.favorite_movies.FavoriteMoviesResponse
 import com.example.themoviedb.models.movie_details.MovieCast
 import com.example.themoviedb.models.movie_details.MovieDetailsResponse
 import com.example.themoviedb.models.movies.MoviesResponse
@@ -72,19 +71,50 @@ interface MoviesService {
     ): Single<DeleteSessionResponse>
 
     @POST("/3/account/{username}/favorite")
-    fun addFavoriteMovie(
+    fun toggleFavoriteMovie(
         @Path("username") username: String,
         @Query("session_id") sessionId: String,
-        @Query("media_type") mediaType: String,
-        @Query("media_id") movieId: Int,
-        @Query("favorite") favoriteFlag: Boolean,
-    ): Single<AddFavoriteMovieResponse>
+        @Body toggleFavoriteMovieStateModel: ToggleFavoriteMovieStateModel
+    ): Single<ToggleMovieStateResponse>
+
+    @POST("/3/account/{username}/watchlist")
+    fun toggleWatchlist(
+        @Path("username") username: String,
+        @Query("session_id") sessionId: String,
+        @Body toggleWatchlistStateModel: ToggleWatchlistStateModel
+    ): Single<ToggleMovieStateResponse>
+
+    @POST("/3/movie/{movie_id}/rating")
+    fun setMovieRating(
+        @Path("movie_id") movieId: Int,
+        @Query("session_id") sessionId: String,
+        @Body movieRating: MovieRating
+    ): Single<SetMovieRatingResponse>
 
     @GET("3/account/{username}/favorite/movies")
     fun getFavoriteMovies(
         @Path("username") username: String,
         @Query("session_id") sessionId: String,
         @Query("page") page: Int
-    ): Single<FavoriteMoviesResponse>
+    ): Single<AccountMoviesResponse>
 
+    @GET("3/account/{username}/rated/movies")
+    fun getRatedMovies(
+        @Path("username") username: String,
+        @Query("session_id") sessionId: String,
+        @Query("page") page: Int
+    ): Single<AccountMoviesResponse>
+
+    @GET("3/account/{username}/watchlist/movies")
+    fun getWatchlist(
+        @Path("username") username: String,
+        @Query("session_id") sessionId: String,
+        @Query("page") page: Int
+    ): Single<AccountMoviesResponse>
+
+    @GET("3/movie/{movie_id}/account_states")
+    fun getAccountMovieSate(
+        @Path("movie_id") movieId: Int,
+        @Query("session_id") sessionId: String
+    ): Single<AccountMovieStateResponse>
 }

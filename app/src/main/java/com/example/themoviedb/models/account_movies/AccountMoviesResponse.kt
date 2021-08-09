@@ -1,11 +1,11 @@
-package com.example.themoviedb.models.favorite_movies
+package com.example.themoviedb.models.account_movies
 
 import com.google.gson.annotations.SerializedName
 
-data class FavoriteMoviesResponse(
+data class AccountMoviesResponse(
     val page: Int,
     @SerializedName("results")
-    val favoriteMovieModels: List<FavoriteMovieModel>,
+    val accountMoviesModel: List<AccountMovieModel>,
     @SerializedName("total_pages")
     val totalPages: Int,
     @SerializedName("total_results")

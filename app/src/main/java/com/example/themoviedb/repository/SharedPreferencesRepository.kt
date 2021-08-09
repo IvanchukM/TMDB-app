@@ -65,13 +65,13 @@ class SharedPreferencesRepository @Inject constructor(private val sharedPreferen
 
     }
 
-    fun saveSessionId(sessionId: String) {
+    fun saveSessionId(sessionId: String?) {
         sharedPreferences.edit()
             .putString(SESSION_ID, sessionId)
             .apply()
     }
 
-    fun getSessionId(): String = sharedPreferences.getString(SESSION_ID, null).toString()
+    fun getSessionId(): String? = sharedPreferences.getString(SESSION_ID, null)
 
     fun saveUsername(username: String) {
         sharedPreferences.edit()
@@ -81,19 +81,4 @@ class SharedPreferencesRepository @Inject constructor(private val sharedPreferen
 
     fun getUsername(): String = sharedPreferences.getString(USERNAME, null).toString()
 
-//    fun savePassword(password: String) {
-//        sharedPreferences.edit()
-//            .putString(PASSWORD, password)
-//            .apply()
-//    }
-//
-//    fun getPassword(): String = sharedPreferences.getString(PASSWORD, null).toString()
-
-    fun saveLoginState(isLogged: Boolean) {
-        sharedPreferences.edit()
-            .putBoolean(IS_LOGGED, isLogged)
-            .apply()
-    }
-
-    fun getLoginState() = sharedPreferences.getBoolean(IS_LOGGED, false)
 }

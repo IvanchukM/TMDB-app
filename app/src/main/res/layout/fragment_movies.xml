@@ -13,11 +13,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/switch_layout_toolbar"
+            android:id="@+id/movie_list_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?colorPrimary"
-            app:menu="@menu/switch_layout_menu" />
+            app:menu="@menu/movies_list_menu" />
 
         <ImageView
             android:id="@+id/switch_layout_img"

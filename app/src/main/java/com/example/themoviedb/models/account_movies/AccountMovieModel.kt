@@ -1,9 +1,9 @@
-package com.example.themoviedb.models.favorite_movies
+package com.example.themoviedb.models.account_movies
 
 import com.google.gson.annotations.SerializedName
 import java.util.*
 
-data class FavoriteMovieModel(
+data class AccountMovieModel(
     val adult: Boolean,
     @SerializedName("backdrop_path")
     val backdropPath: String?,

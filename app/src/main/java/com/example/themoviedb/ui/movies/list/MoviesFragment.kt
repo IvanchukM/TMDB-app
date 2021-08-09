@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentMoviesBinding
 import com.example.themoviedb.models.movies.MoviesModel
+import com.example.themoviedb.repository.AccountQueryType
 import com.example.themoviedb.repository.MovieQueryType
+import com.example.themoviedb.ui.account.AccountContainerFragment
 import com.example.themoviedb.ui.account.UserAccountFragment
 import com.example.themoviedb.ui.account.login.LoginFragment
 import com.example.themoviedb.ui.movie_details.MovieDetailsFragment
@@ -55,7 +57,7 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         binding = FragmentMoviesBinding.inflate(inflater, container, false)
 
-        binding.switchLayoutToolbar.setOnMenuItemClickListener { item ->
+        binding.movieListToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.profile -> {
                     openAccountFragment()
@@ -84,17 +86,17 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
             when (recyclerViewState) {
                 LayoutManagerTypes.GRID -> {
                     binding.moviesRecycler.layoutManager = GridLayoutManager(activity, 2)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.movieListToolbar.menu.findItem(R.id.layout_switch_button)
                         .setIcon(R.drawable.ic_grid_layout)
                 }
                 LayoutManagerTypes.LINEAR -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.movieListToolbar.menu.findItem(R.id.layout_switch_button)
                         .setIcon(R.drawable.ic_linear_layout)
                 }
                 else -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
-                    binding.switchLayoutToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.movieListToolbar.menu.findItem(R.id.layout_switch_button)
                         .setIcon(R.drawable.ic_linear_layout)
                 }
             }
@@ -109,7 +111,7 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
             .beginTransaction()
             .replace(
                 R.id.activity_fragment_container,
-                UserAccountFragment.newInstance()
+                AccountContainerFragment.newInstance()
             )
             .addToBackStack(null)
             .commit()

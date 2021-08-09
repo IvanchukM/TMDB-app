@@ -5,18 +5,15 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.rxjava2.flowable
 import com.example.themoviedb.models.MovieInfoModel
+import com.example.themoviedb.models.account_movies.*
 import com.example.themoviedb.models.auth.AuthResponse
 import com.example.themoviedb.models.auth.DeleteSessionResponse
 import com.example.themoviedb.models.auth.LoginResponse
 import com.example.themoviedb.models.auth.SessionResponse
-import com.example.themoviedb.models.favorite_movies.AddFavoriteMovieResponse
-import com.example.themoviedb.models.favorite_movies.FavoriteMovieModel
-import com.example.themoviedb.models.favorite_movies.FavoriteMoviesResponse
 import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.services.MoviesService
 import io.reactivex.Flowable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,9 +27,20 @@ class MovieRepository @Inject constructor(
         pagingSourceFactory = { MoviesDataSource(moviesService, queryType) }
     ).flowable
 
-    fun getFavoriteMovies(sessionId: String, username: String): Flowable<PagingData<FavoriteMovieModel>> = Pager(
+    fun getFavoriteMovies(
+        sessionId: String,
+        username: String,
+        queryType: AccountQueryType
+    ): Flowable<PagingData<AccountMovieModel>> = Pager(
         config = PagingConfig(20),
-        pagingSourceFactory = { FavoriteMoviesDataSource(moviesService, sessionId, username) }
+        pagingSourceFactory = {
+            FavoriteMoviesDataSource(
+                moviesService,
+                sessionId,
+                username,
+                queryType
+            )
+        }
     ).flowable
 
     fun getAllMovieData(movieId: Int): Single<MovieInfoModel> {
@@ -58,29 +66,33 @@ class MovieRepository @Inject constructor(
     fun deleteSession(sessionId: String): Single<DeleteSessionResponse> =
         moviesService.deleteSession(sessionId)
 
-    fun addFavoriteMovie(
+    fun getAccountMovieState(movieId: Int, sessionId: String) =
+        moviesService.getAccountMovieSate(movieId, sessionId)
+
+    fun switchFavoriteMovieState(
         username: String,
         sessionId: String,
-        movieId: Int
-    ): Single<AddFavoriteMovieResponse> =
-        moviesService.addFavoriteMovie(
-            username = username,
-            sessionId = sessionId,
-            mediaType = "movie",
-            movieId = movieId,
-            favoriteFlag = true
+        toggleFavoriteMovieStateModel: ToggleFavoriteMovieStateModel
+    ): Single<ToggleMovieStateResponse> =
+        moviesService.toggleFavoriteMovie(
+            username,
+            sessionId,
+            toggleFavoriteMovieStateModel
         )
 
-    fun removeFavoriteMovie(
+    fun toggleWatchlistState(
         username: String,
         sessionId: String,
-        movieId: Int
-    ): Single<AddFavoriteMovieResponse> =
-        moviesService.addFavoriteMovie(
-            username = username,
-            sessionId = sessionId,
-            mediaType = "movie",
-            movieId = movieId,
-            favoriteFlag = false
+        toggleWatchlistStateModel: ToggleWatchlistStateModel
+    ): Single<ToggleMovieStateResponse> =
+        moviesService.toggleWatchlist(
+            username, sessionId, toggleWatchlistStateModel
         )
+
+    fun setMovieRating(
+        movieId: Int,
+        sessionId: String,
+        movieRating: MovieRating
+    ): Single<SetMovieRatingResponse> =
+        moviesService.setMovieRating(movieId, sessionId, movieRating)
 }

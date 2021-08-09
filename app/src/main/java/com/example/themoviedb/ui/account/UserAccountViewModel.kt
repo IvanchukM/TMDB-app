@@ -1,10 +1,12 @@
 package com.example.themoviedb.ui.account
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.rxjava2.cachedIn
-import com.example.themoviedb.models.favorite_movies.FavoriteMovieModel
+import com.example.themoviedb.models.account_movies.AccountMovieModel
+import com.example.themoviedb.repository.AccountQueryType
 import com.example.themoviedb.repository.MovieRepository
 import com.example.themoviedb.repository.SharedPreferencesRepository
 import com.example.themoviedb.utils.BaseViewModel
@@ -22,22 +24,44 @@ class UserAccountViewModel @Inject constructor(
     private val sharedPreferencesRepository: SharedPreferencesRepository
 ) : BaseViewModel() {
 
-    val favoriteMovies = MutableLiveData<PagingData<FavoriteMovieModel>>()
+    val movieData = MutableLiveData<PagingData<AccountMovieModel>>()
+    val isUserLoginIn = MutableLiveData<Boolean>()
+    val currentQuery = MutableLiveData<AccountQueryType>()
 
-    fun getFavoriteMovies() {
+    fun loadAccountMovies(queryType: AccountQueryType) {
         val sessionId = sharedPreferencesRepository.getSessionId()
         val username = sharedPreferencesRepository.getUsername()
         compositeDisposable.add(
-            repository.getFavoriteMovies(sessionId,username )
+            repository.getFavoriteMovies(sessionId.toString(), username, queryType)
                 .performCallWhenInternetIsAvailable(networkHandler.observeNetworkState())
                 .cachedIn(viewModelScope)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { result ->
-                    favoriteMovies.value = result
+                    movieData.value = result
+                    currentQuery.value = queryType
                 }
         )
-
     }
 
+    fun logoutUser() {
+        compositeDisposable.add(
+            repository.deleteSession(sharedPreferencesRepository.getSessionId().toString())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                    { success ->
+                        Log.d("logout", "success $success")
+                        sharedPreferencesRepository.saveSessionId(null)
+                    },
+                    { error ->
+                        Log.d("logout", "error $error ")
+                    }
+                )
+        )
+    }
+
+    fun checkIfUserLoginIn() {
+        isUserLoginIn.value = sharedPreferencesRepository.getSessionId().isNullOrEmpty()
+    }
 }

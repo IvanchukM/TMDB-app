@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?colorPrimary"
-            app:title="@string/account" />
+            app:menu="@menu/account_menu" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -26,7 +26,7 @@
         android:layout_height="0dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
-        app:layout_constraintBottom_toTopOf="@id/get_fav_movies_btn"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/app_bar"
@@ -43,22 +43,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/go_to_login_btn"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:text="@string/sign_in"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/get_fav_movies_btn"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/get_fav_movies_btn"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:text="Get Movies"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/go_to_login_btn" />
 </androidx.constraintlayout.widget.ConstraintLayout>

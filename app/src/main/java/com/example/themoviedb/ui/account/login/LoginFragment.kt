@@ -9,7 +9,9 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentLoginBinding
+import com.example.themoviedb.ui.account.AccountContainerFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,18 +38,19 @@ class LoginFragment : Fragment() {
             }
         }
 
-        binding.logoutButton.setOnClickListener {
-            logoutUser()
-        }
-
         viewModel.loginResponse.observe(viewLifecycleOwner, { response ->
             when (response) {
-                true -> Toast.makeText(
-                    requireActivity(),
-                    "Login successful",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                true -> {
+                    Toast.makeText(
+                        requireActivity(),
+                        "Login successful",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+//                    openAccountFragment()
+                    requireActivity().supportFragmentManager.popBackStack()
+                }
+
                 false -> Toast.makeText(
                     requireActivity(),
                     "Invalid login and/or password",
@@ -57,22 +60,20 @@ class LoginFragment : Fragment() {
             }
         })
 
-        viewModel.loginState.observe(viewLifecycleOwner, { loginState ->
-            toggleViews(loginState)
-        })
         viewModel.username.observe(viewLifecycleOwner, { username ->
             binding.username.text = username
         })
         return binding.root
     }
 
-    private fun logoutUser() {
-        viewModel.logoutUser()
-    }
-
-    private fun toggleViews(loginState: Boolean) {
-        binding.loginLayout.isVisible = !loginState
-        binding.logoutLayout.isVisible = loginState
+    private fun openAccountFragment() {
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.activity_fragment_container,
+                AccountContainerFragment.newInstance()
+            )
+            .commit()
     }
 
     override fun onDestroy() {
