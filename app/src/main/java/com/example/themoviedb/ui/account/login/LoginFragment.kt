@@ -47,8 +47,7 @@ class LoginFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     )
                         .show()
-//                    openAccountFragment()
-                    requireActivity().supportFragmentManager.popBackStack()
+                    openAccountFragment()
                 }
 
                 false -> Toast.makeText(
@@ -60,9 +59,6 @@ class LoginFragment : Fragment() {
             }
         })
 
-        viewModel.username.observe(viewLifecycleOwner, { username ->
-            binding.username.text = username
-        })
         return binding.root
     }
 

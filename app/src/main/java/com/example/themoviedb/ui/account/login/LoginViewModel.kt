@@ -19,11 +19,6 @@ class LoginViewModel @Inject constructor(
     BaseViewModel() {
 
     val loginResponse = MutableLiveData<Boolean>()
-    val username = MutableLiveData<String>()
-
-    init {
-        username.postValue(getUsername())
-    }
 
     fun loginUser(username: String, password: String) {
         compositeDisposable.add(
@@ -53,9 +48,6 @@ class LoginViewModel @Inject constructor(
     private fun saveUsername(username: String) {
         sharedPreferencesRepository.saveUsername(username = username)
     }
-
-    private fun getUsername(): String =
-        sharedPreferencesRepository.getUsername()
 
     private fun saveSessionId(sessionId: String) {
         sharedPreferencesRepository.saveSessionId(sessionId)
