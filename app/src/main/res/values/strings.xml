@@ -65,4 +65,6 @@
     <string name="ask_for_login">You need to login first</string>
     <string name="cancel">Cancel</string>
     <string name="submit">Submit</string>
+    <string name="login_successful">Login successful</string>
+    <string name="invalid_user_credentials">Invalid login and/or password</string>
 </resources>

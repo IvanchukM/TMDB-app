@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentAccountContainerBinding
 import com.example.themoviedb.repository.AccountQueryType
-import com.example.themoviedb.repository.MovieQueryType
 
 class AccountContainerFragment : Fragment() {
 

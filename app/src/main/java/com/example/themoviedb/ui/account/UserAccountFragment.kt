@@ -45,17 +45,12 @@ class UserAccountFragment : Fragment(), LoadingStateAdapter.OnRetryClickListener
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentUserAccountBinding.inflate(inflater, container, false)
-        viewModel.checkIfUserLoginIn()
-        viewModel.isUserLoginIn.observe(viewLifecycleOwner, { isUserLoginIn ->
-            if (isUserLoginIn) {
-                openLoginFragment()
-            }
-        })
 
         binding.accountToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.logout -> {
                     viewModel.logoutUser()
+                    openLoginFragment()
                 }
             }
             true
@@ -84,21 +79,22 @@ class UserAccountFragment : Fragment(), LoadingStateAdapter.OnRetryClickListener
         return binding.root
     }
 
-    private fun setUpProgressBar() {
-        favoritesMoviesAdapter.addLoadStateListener { loadState ->
-            binding.progressBar.isVisible = loadState.source.refresh is LoadState.Loading
-        }
-    }
-
-
     private fun openLoginFragment() {
+        requireActivity().supportFragmentManager.popBackStack()
         requireActivity().supportFragmentManager
             .beginTransaction()
             .replace(
                 R.id.activity_fragment_container,
                 LoginFragment.newInstance()
             )
+            .addToBackStack(null)
             .commit()
+    }
+
+    private fun setUpProgressBar() {
+        favoritesMoviesAdapter.addLoadStateListener { loadState ->
+            binding.progressBar.isVisible = loadState.source.refresh is LoadState.Loading
+        }
     }
 
     override fun onDestroy() {

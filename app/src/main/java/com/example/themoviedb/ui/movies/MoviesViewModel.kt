@@ -26,6 +26,7 @@ class MoviesViewModel @Inject constructor(
 
     val movies = MutableLiveData<PagingData<MoviesModel>>()
     val layoutState = MutableLiveData<LayoutManagerTypes>()
+    val isUserLoginIn = MutableLiveData<Boolean>()
 
     init {
         compositeDisposable.add(
@@ -33,6 +34,11 @@ class MoviesViewModel @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { type -> layoutState.postValue(type) }
         )
+
+    }
+
+    fun checkIfUserLoginIn() {
+        isUserLoginIn.value = sharedPreferencesRepository.getSessionId().isNullOrEmpty()
     }
 
     fun updateLayoutManagerType() {

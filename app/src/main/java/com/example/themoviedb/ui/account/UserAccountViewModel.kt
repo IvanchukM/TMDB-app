@@ -25,7 +25,6 @@ class UserAccountViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val movieData = MutableLiveData<PagingData<AccountMovieModel>>()
-    val isUserLoginIn = MutableLiveData<Boolean>()
     val currentQuery = MutableLiveData<AccountQueryType>()
 
     fun loadAccountMovies(queryType: AccountQueryType) {
@@ -61,7 +60,4 @@ class UserAccountViewModel @Inject constructor(
         )
     }
 
-    fun checkIfUserLoginIn() {
-        isUserLoginIn.value = sharedPreferencesRepository.getSessionId().isNullOrEmpty()
-    }
 }

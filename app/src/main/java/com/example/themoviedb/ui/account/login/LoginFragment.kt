@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.themoviedb.R
@@ -43,19 +42,21 @@ class LoginFragment : Fragment() {
                 true -> {
                     Toast.makeText(
                         requireActivity(),
-                        "Login successful",
+                        getString(R.string.login_successful),
                         Toast.LENGTH_SHORT
                     )
                         .show()
                     openAccountFragment()
                 }
 
-                false -> Toast.makeText(
-                    requireActivity(),
-                    "Invalid login and/or password",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                false -> {
+                    Toast.makeText(
+                        requireActivity(),
+                        getString(R.string.invalid_user_credentials),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
             }
         })
 
@@ -63,12 +64,14 @@ class LoginFragment : Fragment() {
     }
 
     private fun openAccountFragment() {
+        requireActivity().supportFragmentManager.popBackStack()
         requireActivity().supportFragmentManager
             .beginTransaction()
             .replace(
                 R.id.activity_fragment_container,
                 AccountContainerFragment.newInstance()
             )
+            .addToBackStack(null)
             .commit()
     }
 

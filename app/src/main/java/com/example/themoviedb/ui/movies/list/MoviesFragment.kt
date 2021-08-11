@@ -60,7 +60,8 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
         binding.movieListToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.profile -> {
-                    openAccountFragment()
+                    viewModel.checkIfUserLoginIn()
+                    checkIfUserLoginIn()
                 }
                 R.id.layout_switch_button -> {
                     viewModel.updateLayoutManagerType()
@@ -104,6 +105,24 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         setUpProgressBar()
         return binding.root
+    }
+
+    private fun checkIfUserLoginIn(){
+        if(viewModel.isUserLoginIn.value == true){
+            openLoginFragment()
+        } else {
+            openAccountFragment()
+        }
+    }
+    private fun openLoginFragment() {
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.activity_fragment_container,
+                LoginFragment.newInstance()
+            )
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun openAccountFragment() {
