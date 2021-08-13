@@ -8,8 +8,6 @@ import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.repository.MovieQueryType
 import com.example.themoviedb.repository.MovieRepository
 import com.example.themoviedb.repository.SharedPreferencesRepository
-import com.example.themoviedb.repository.SettingsRepository
-import com.example.themoviedb.utils.ApplicationThemes
 import com.example.themoviedb.utils.BaseViewModel
 import com.example.themoviedb.utils.LayoutManagerTypes
 import com.example.themoviedb.utils.NetworkHandler

@@ -13,10 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentMoviesBinding
 import com.example.themoviedb.models.movies.MoviesModel
-import com.example.themoviedb.repository.AccountQueryType
 import com.example.themoviedb.repository.MovieQueryType
 import com.example.themoviedb.ui.account.AccountContainerFragment
-import com.example.themoviedb.ui.account.UserAccountFragment
 import com.example.themoviedb.ui.account.login.LoginFragment
 import com.example.themoviedb.ui.movie_details.MovieDetailsFragment
 import com.example.themoviedb.ui.movies.MoviesPagingAdapter

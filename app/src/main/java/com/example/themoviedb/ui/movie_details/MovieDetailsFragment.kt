@@ -13,15 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentMovieDetailsBinding
-import com.example.themoviedb.models.account_movies.AccountMovieStateResponse
-import com.example.themoviedb.models.account_movies.MovieRating
 import com.example.themoviedb.models.account_movies.ToggleFavoriteMovieStateModel
 import com.example.themoviedb.models.account_movies.ToggleWatchlistStateModel
 import com.example.themoviedb.models.movie_details.Genre
 import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.ui.movie_reviews.MovieReviewDetailsFragment
 import com.example.themoviedb.utils.LoadingState
-import com.example.themoviedb.utils.OnMovieRated
 import com.example.themoviedb.utils.extensions.convertIntoData
 import com.example.themoviedb.utils.extensions.convertIntoYear
 import com.example.themoviedb.utils.extensions.loadImageWithBaseUrl
