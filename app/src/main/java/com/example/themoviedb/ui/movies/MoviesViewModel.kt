@@ -8,6 +8,8 @@ import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.repository.MovieQueryType
 import com.example.themoviedb.repository.MovieRepository
 import com.example.themoviedb.repository.SharedPreferencesRepository
+import com.example.themoviedb.repository.SettingsRepository
+import com.example.themoviedb.utils.ApplicationThemes
 import com.example.themoviedb.utils.BaseViewModel
 import com.example.themoviedb.utils.LayoutManagerTypes
 import com.example.themoviedb.utils.NetworkHandler
@@ -16,6 +18,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
+
+private const val NOW_PLAYING_STRING = "Now Playing Movies"
+private const val TOP_RATED_STRING = "Top Rated Movies"
+private const val POPULAR_STRING = "Popular Movies"
+private const val MOVIES_STRING = "Movies"
 
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
@@ -39,6 +46,7 @@ class MoviesViewModel @Inject constructor(
 
     fun checkIfUserLoginIn() {
         isUserLoginIn.value = sharedPreferencesRepository.getSessionId().isNullOrEmpty()
+
     }
 
     fun updateLayoutManagerType() {
@@ -56,6 +64,12 @@ class MoviesViewModel @Inject constructor(
     }
 
     fun loadMovies(queryType: MovieQueryType) {
+        when (queryType) {
+            MovieQueryType.Popular -> POPULAR_STRING
+            MovieQueryType.NowPlaying -> NOW_PLAYING_STRING
+            MovieQueryType.TopRated -> TOP_RATED_STRING
+            else -> MOVIES_STRING
+        }
         compositeDisposable.add(
             repository.getMovies(queryType)
                 .performCallWhenInternetIsAvailable(networkHandler.observeNetworkState())

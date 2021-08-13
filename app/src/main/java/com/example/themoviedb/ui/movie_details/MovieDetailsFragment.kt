@@ -36,7 +36,8 @@ private const val RATING_DIALOG_FRAGMENT = "rateFragment"
 @AndroidEntryPoint
 class MovieDetailsFragment : Fragment(), OnMovieRated {
 
-    private lateinit var binding: FragmentMovieDetailsBinding
+    private var _binding: FragmentMovieDetailsBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel by viewModels<MovieDetailsViewModel>()
 
@@ -58,7 +59,7 @@ class MovieDetailsFragment : Fragment(), OnMovieRated {
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentMovieDetailsBinding.inflate(inflater, container, false)
+        _binding = FragmentMovieDetailsBinding.inflate(inflater, container, false)
 
         binding.recyclerViewActors.isNestedScrollingEnabled = false
 
@@ -295,6 +296,10 @@ class MovieDetailsFragment : Fragment(), OnMovieRated {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     companion object {
         fun newInstance(
             moviesModel: MoviesModel

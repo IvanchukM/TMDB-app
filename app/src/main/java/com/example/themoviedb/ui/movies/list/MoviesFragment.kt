@@ -32,7 +32,8 @@ private const val ARG_MOVIE_STRING = "queryString"
 class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
     LoadingStateAdapter.OnRetryClickListener {
 
-    private lateinit var binding: FragmentMoviesBinding
+    private var _binding: FragmentMoviesBinding? = null
+    private val binding get() = _binding!!
     private val viewModel by viewModels<MoviesViewModel>()
     private val moviesRecyclerViewPagingAdapter: MoviesPagingAdapter by lazy {
         MoviesPagingAdapter(this)
@@ -55,7 +56,7 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentMoviesBinding.inflate(inflater, container, false)
+        _binding = FragmentMoviesBinding.inflate(inflater, container, false)
 
         binding.movieListToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -156,6 +157,11 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
     override fun onRetryClick() {
         moviesRecyclerViewPagingAdapter.retry()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
