@@ -107,34 +107,22 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
         return binding.root
     }
 
-    private fun checkIfUserLoginIn(){
-        if(viewModel.isUserLoginIn.value == true){
-            openLoginFragment()
+    private fun checkIfUserLoginIn() {
+        val fragment = if (viewModel.isUserLoginIn.value == true) {
+            LoginFragment.newInstance()
         } else {
-            openAccountFragment()
+            AccountContainerFragment.newInstance()
         }
-    }
-    private fun openLoginFragment() {
         requireActivity().supportFragmentManager
             .beginTransaction()
             .replace(
                 R.id.activity_fragment_container,
-                LoginFragment.newInstance()
+                fragment
             )
             .addToBackStack(null)
             .commit()
     }
 
-    private fun openAccountFragment() {
-        requireActivity().supportFragmentManager
-            .beginTransaction()
-            .replace(
-                R.id.activity_fragment_container,
-                AccountContainerFragment.newInstance()
-            )
-            .addToBackStack(null)
-            .commit()
-    }
 
     private fun openSettingsFragment() {
         requireActivity().supportFragmentManager

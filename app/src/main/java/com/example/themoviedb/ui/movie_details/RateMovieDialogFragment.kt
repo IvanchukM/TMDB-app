@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.themoviedb.databinding.FragmentRateMovieBinding
-import com.example.themoviedb.utils.OnMovieRated
 
 class RateMovieDialogFragment(private val onMovieRated: OnMovieRated) : DialogFragment() {
     private var _binding: FragmentRateMovieBinding? = null
@@ -35,4 +34,8 @@ class RateMovieDialogFragment(private val onMovieRated: OnMovieRated) : DialogFr
         super.onDestroy()
         _binding = null
     }
+}
+
+interface OnMovieRated {
+    fun rateMovie(movieRating: Float)
 }
