@@ -8,7 +8,6 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.example.themoviedb.BuildConfig
-import com.example.themoviedb.R
 
 fun ImageView.loadImageWithBaseUrl(
     url: String?,

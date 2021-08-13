@@ -11,9 +11,13 @@ import javax.inject.Singleton
 
 private const val LAYOUT_MANAGER = "layoutManager"
 private const val APPLICATION_THEME = "applicationTheme"
+private const val SESSION_ID = "session_id"
+private const val USERNAME = "username"
+private const val PASSWORD = "password"
+private const val IS_LOGGED = "is_logged"
 
 @Singleton
-class SettingsRepository @Inject constructor(private val sharedPreferences: SharedPreferences) {
+class SharedPreferencesRepository @Inject constructor(private val sharedPreferences: SharedPreferences) {
 
     fun saveLayoutManagerType(currentLayoutManagerType: LayoutManagerTypes): Completable =
         Completable.fromCallable {
@@ -60,4 +64,21 @@ class SettingsRepository @Inject constructor(private val sharedPreferences: Shar
         return ApplicationThemes.enumToString(applicationTheme)
 
     }
+
+    fun saveSessionId(sessionId: String?) {
+        sharedPreferences.edit()
+            .putString(SESSION_ID, sessionId)
+            .apply()
+    }
+
+    fun getSessionId(): String? = sharedPreferences.getString(SESSION_ID, null)
+
+    fun saveUsername(username: String) {
+        sharedPreferences.edit()
+            .putString(USERNAME, username)
+            .apply()
+    }
+
+    fun getUsername(): String = sharedPreferences.getString(USERNAME, null).toString()
+
 }

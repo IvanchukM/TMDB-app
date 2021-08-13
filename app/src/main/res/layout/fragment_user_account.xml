@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_movies"
+    android:id="@+id/fragment_user_account"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -13,24 +13,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/movie_list_toolbar"
+            android:id="@+id/account_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?colorPrimary"
-            app:menu="@menu/movies_list_menu" />
-
-        <ImageView
-            android:id="@+id/switch_layout_img"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:layout_marginEnd="10dp"
-            android:contentDescription="@string/switch_layout_type_icon"
-            android:src="@drawable/ic_linear_layout" />
+            app:menu="@menu/account_menu" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/movies_recycler"
+        android:id="@+id/favorite_movies_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:paddingTop="5dp"
@@ -52,5 +43,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

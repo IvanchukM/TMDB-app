@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/toggle_favorite"
+        android:title="@string/add_to_favorite" />
+    <item
+        android:id="@+id/toggle_rating"
+        android:title="@string/rate_movie" />
+    <item
+        android:id="@+id/toggle_watchlist"
+        android:title="@string/add_to_watchlist" />
+</menu>

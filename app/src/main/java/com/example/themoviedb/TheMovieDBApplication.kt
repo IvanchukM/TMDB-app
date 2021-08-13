@@ -2,7 +2,7 @@ package com.example.themoviedb
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.themoviedb.repository.SettingsRepository
+import com.example.themoviedb.repository.SharedPreferencesRepository
 import com.example.themoviedb.utils.ApplicationThemes
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -10,7 +10,7 @@ import javax.inject.Inject
 @HiltAndroidApp
 class TheMovieDBApplication : Application() {
     @Inject
-    lateinit var settingsRepository: SettingsRepository
+    lateinit var sharedPreferencesRepository: SharedPreferencesRepository
     override fun onCreate() {
         super.onCreate()
 
@@ -18,7 +18,7 @@ class TheMovieDBApplication : Application() {
     }
 
     private fun setUpTheme() {
-        when (settingsRepository.loadApplicationThemeSync()) {
+        when (sharedPreferencesRepository.loadApplicationThemeSync()) {
             ApplicationThemes.LIGHT -> {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }

@@ -14,6 +14,8 @@ import com.example.themoviedb.R
 import com.example.themoviedb.databinding.FragmentMoviesBinding
 import com.example.themoviedb.models.movies.MoviesModel
 import com.example.themoviedb.repository.MovieQueryType
+import com.example.themoviedb.ui.account.AccountContainerFragment
+import com.example.themoviedb.ui.account.login.LoginFragment
 import com.example.themoviedb.ui.movie_details.MovieDetailsFragment
 import com.example.themoviedb.ui.movies.MoviesPagingAdapter
 import com.example.themoviedb.ui.movies.MoviesViewModel
@@ -54,8 +56,12 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
 
         _binding = FragmentMoviesBinding.inflate(inflater, container, false)
 
-        binding.moviesListToolbar.setOnMenuItemClickListener { item ->
+        binding.movieListToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
+                R.id.profile -> {
+                    viewModel.checkIfUserLoginIn()
+                    checkIfUserLoginIn()
+                }
                 R.id.layout_switch_button -> {
                     viewModel.updateLayoutManagerType()
                 }
@@ -80,17 +86,17 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
             when (recyclerViewState) {
                 LayoutManagerTypes.GRID -> {
                     binding.moviesRecycler.layoutManager = GridLayoutManager(activity, 2)
-                    binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.movieListToolbar.menu.findItem(R.id.layout_switch_button)
                         .setIcon(R.drawable.ic_grid_layout)
                 }
                 LayoutManagerTypes.LINEAR -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
-                    binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.movieListToolbar.menu.findItem(R.id.layout_switch_button)
                         .setIcon(R.drawable.ic_linear_layout)
                 }
                 else -> {
                     binding.moviesRecycler.layoutManager = LinearLayoutManager(activity)
-                    binding.moviesListToolbar.menu.findItem(R.id.layout_switch_button)
+                    binding.movieListToolbar.menu.findItem(R.id.layout_switch_button)
                         .setIcon(R.drawable.ic_linear_layout)
                 }
             }
@@ -99,6 +105,23 @@ class MoviesFragment : Fragment(), MoviesPagingAdapter.OnMovieClickListener,
         setUpProgressBar()
         return binding.root
     }
+
+    private fun checkIfUserLoginIn() {
+        val fragment = if (viewModel.isUserLoginIn.value == true) {
+            LoginFragment.newInstance()
+        } else {
+            AccountContainerFragment.newInstance()
+        }
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.activity_fragment_container,
+                fragment
+            )
+            .addToBackStack(null)
+            .commit()
+    }
+
 
     private fun openSettingsFragment() {
         requireActivity().supportFragmentManager
