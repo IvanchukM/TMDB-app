@@ -31,7 +31,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideContext(application: Application): Context = application.applicationContext
-
+test
     @Provides
     @Singleton
     fun provideSharedPreferences(context: Context): SharedPreferences =
